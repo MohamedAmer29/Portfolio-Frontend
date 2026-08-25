@@ -1,122 +1,151 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { CustomCursor } from "./components/CustomCursor";
+import { MiniGame } from "./components/MiniGame";
+import { Navbar } from "./components/Navbar";
+import { useActiveSection } from "./hooks/useActiveSection";
+import { PageLoader } from "./components/PageLoader";
+import { Sidebars } from "./components/Sidebars";
+import { About } from "./components/sections/About";
+import { Contact } from "./components/sections/Contact";
+import { Experience } from "./components/sections/Experience";
+import { Footer } from "./components/sections/Footer";
+import { Hero } from "./components/sections/Hero";
+import { Projects } from "./components/sections/Projects";
+import { portfolio } from "./data/portfolio";
+import { gsap, useGSAP } from "./lib/gsap";
+
+const ScrollCar = lazy(() =>
+  import("./components/ScrollCar").then((module) => ({
+    default: module.ScrollCar,
+  })),
+);
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [showMiniGame, setShowMiniGame] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [showLoader, setShowLoader] = useState(true);
+  const [postGameLoading, setPostGameLoading] = useState(false);
+  const [carShouldAnimate, setCarShouldAnimate] = useState(false);
+  const shellRef = useRef<HTMLDivElement>(null);
+  const activeSection = useActiveSection(["about", "experience", "work", "contact"]);
+
+  useEffect(() => {
+    // Check if mini-game has been shown before
+    const hasSeenMiniGame = localStorage.getItem("hasSeenMiniGame");
+    if (!hasSeenMiniGame) {
+      setShowMiniGame(true);
+      setShowLoader(false);
+    }
+  }, []);
+
+  const onMiniGameComplete = useCallback(() => {
+    localStorage.setItem("hasSeenMiniGame", "true");
+    setShowMiniGame(false);
+    setPostGameLoading(true);
+    setTimeout(() => {
+      setPostGameLoading(false);
+      setReady(true);
+      setTimeout(() => {
+        setCarShouldAnimate(true);
+      }, 350);
+    }, 1800);
+  }, []);
+
+  const onLoaderComplete = useCallback(() => {
+    setReady(true);
+    setShowLoader(false);
+    // Trigger car animation after a short delay to allow the main app to fade in
+    setTimeout(() => {
+      setCarShouldAnimate(true);
+    }, 350);
+  }, []);
+
+  useGSAP(
+    () => {
+      if (!ready || !shellRef.current) return;
+      gsap.fromTo(
+        shellRef.current,
+        { autoAlpha: 0 },
+        { autoAlpha: 1, duration: 0.35, ease: "power2.out" },
+      );
+    },
+    { dependencies: [ready] },
+  );
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      {showMiniGame ? <MiniGame onComplete={onMiniGameComplete} /> : null}
 
-      <div className="ticks"></div>
+      {postGameLoading && (
+        <PageLoader letter={portfolio.logoLetter} onComplete={() => {}} />
+      )}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      {showLoader ? (
+        <PageLoader
+          letter={portfolio.logoLetter}
+          onComplete={onLoaderComplete}
+        />
+      ) : null}
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+      <CustomCursor />
+
+      <div
+        ref={shellRef}
+        className="opacity-0"
+        aria-hidden={!ready}
+        style={{ visibility: ready ? "visible" : "hidden" }}
+      >
+        <Navbar letter={portfolio.logoLetter} resumeUrl={portfolio.resumeUrl} activeSection={activeSection} />
+        <Sidebars
+          email={portfolio.email}
+          github={portfolio.social.github}
+          linkedin={portfolio.social.linkedin}
+        />
+
+        {ready ? (
+          <Suspense fallback={null}>
+            <ScrollCar shouldAnimate={carShouldAnimate} />
+          </Suspense>
+        ) : null}
+
+        <main>
+          <Hero
+            greeting={portfolio.hero.greeting}
+            name={portfolio.fullName}
+            tagline={portfolio.hero.tagline}
+            bio={portfolio.hero.bio}
+            ready={ready}
+          />
+          <About
+            paragraphs={portfolio.about.paragraphs}
+            tech={portfolio.about.tech}
+            letter={portfolio.logoLetter}
+          />
+          <Experience jobs={portfolio.experience} />
+          <Projects projects={portfolio.projects} />
+          <Contact
+            eyebrow={portfolio.contact.eyebrow}
+            title={portfolio.contact.title}
+            blurb={portfolio.contact.blurb}
+            email={portfolio.email}
+          />
+        </main>
+
+        <Footer
+          name={portfolio.name}
+          github={portfolio.social.github}
+          linkedin={portfolio.social.linkedin}
+        />
+      </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
