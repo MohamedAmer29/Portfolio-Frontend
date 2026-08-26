@@ -36,7 +36,7 @@ export function Contact({ eyebrow, title, blurb, email }: ContactProps) {
     <section className="scroll-mt-20 px-5 py-[72px] text-center md:px-0 md:py-[100px]" id="contact">
       <div className="mx-auto w-full max-w-[1000px] md:w-[min(100%-10rem,1000px)]">
         <Reveal>
-          <SectionHeading number="04." title={eyebrow} />
+          <SectionHeading number="06." title={eyebrow} />
           <h2 className="mb-4 font-sans text-contact font-extrabold tracking-[-0.03em] text-ink">
             {title}
           </h2>

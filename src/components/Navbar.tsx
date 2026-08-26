@@ -4,9 +4,11 @@ import { ThemeIcon } from "./ThemeIcon";
 
 const links = [
   { href: "#about", label: "ABOUT", num: "01." },
-  { href: "#experience", label: "EXPERIENCE", num: "02." },
-  { href: "#work", label: "WORK", num: "03." },
-  { href: "#contact", label: "CONTACT", num: "04." },
+  { href: "#skills", label: "SKILLS", num: "02." },
+  { href: "#education", label: "EDUCATION", num: "03." },
+  { href: "#experience", label: "EXPERIENCE", num: "04." },
+  { href: "#work", label: "WORK", num: "05." },
+  { href: "#contact", label: "CONTACT", num: "06." },
 ];
 
 type NavbarProps = {

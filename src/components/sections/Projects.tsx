@@ -37,7 +37,7 @@ export function Projects({ projects }: ProjectsProps) {
     <section className="scroll-mt-20 px-5 py-[72px] md:px-0 md:py-[100px]" id="work">
       <div className="mx-auto w-full max-w-[1000px] md:w-[min(100%-10rem,1000px)]">
         <Reveal>
-          <SectionHeading number="03." title="Some Projects I've Built" />
+          <SectionHeading number="05." title="Some Projects I've Built" />
         </Reveal>
 
         <div className="flex flex-col gap-6 md:gap-24">

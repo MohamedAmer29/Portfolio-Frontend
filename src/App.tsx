@@ -20,6 +20,8 @@ import { Experience } from "./components/sections/Experience";
 import { Footer } from "./components/sections/Footer";
 import { Hero } from "./components/sections/Hero";
 import { Projects } from "./components/sections/Projects";
+import { EducationSection } from "./components/education/EducationSection";
+import { SkillsSection } from "./components/skills/SkillsSection";
 import { portfolio } from "./data/portfolio";
 import { gsap, useGSAP } from "./lib/gsap";
 
@@ -37,7 +39,7 @@ function App() {
   const [carShouldAnimate, setCarShouldAnimate] = useState(false);
   const [eclipseTarget, setEclipseTarget] = useState<boolean | null>(null);
   const shellRef = useRef<HTMLDivElement>(null);
-  const activeSection = useActiveSection(["about", "experience", "work", "contact"]);
+  const activeSection = useActiveSection(["about", "skills", "education", "experience", "work", "contact"]);
   const [dark, setDark] = useDarkMode();
 
   useEffect(() => {
@@ -146,6 +148,8 @@ function App() {
             tech={portfolio.about.tech}
             letter={portfolio.logoLetter}
           />
+          <SkillsSection />
+          <EducationSection />
           <Experience jobs={portfolio.experience} />
           <Projects projects={portfolio.projects} />
           <Contact

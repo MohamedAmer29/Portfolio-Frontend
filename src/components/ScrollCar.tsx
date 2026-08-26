@@ -40,6 +40,20 @@ const STATION_DEFINITIONS: StationConfig[] = [
     emissive: "#0d9488",
   },
   {
+    id: "skills",
+    name: "Skills",
+    color: "#64748b",
+    activeColor: "#7fadad",
+    emissive: "#5a8a8a",
+  },
+  {
+    id: "education",
+    name: "Education",
+    color: "#64748b",
+    activeColor: "#60a5fa",
+    emissive: "#2563eb",
+  },
+  {
     id: "experience",
     name: "Experience",
     color: "#64748b",

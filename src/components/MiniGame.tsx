@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { PageLoader } from "./PageLoader";
-import { useThemeColor } from "../hooks/useThemeColor";
-import { useDarkMode } from "../hooks/useDarkMode";
 
 const ROAD_LENGTH = 20;
 const START_Z = ROAD_LENGTH / 2 - 2;
@@ -41,7 +38,7 @@ function Road() {
           position={[segment.x, -0.02, segment.z]}
           receiveShadow
         >
-          <planeGeometry args={[ROAD_WIDTH, 1.1]} />
+          <planeGeometry args={[ROAD_WIDTH, 1.2]} />
           <meshStandardMaterial
             color="#2c3338"
             roughness={0.95}
@@ -121,7 +118,7 @@ function Road() {
         {/* PORTFOLIO Sign */}
         <group position={[0, 0.8, 0]}>
           <mesh position={[0, 0, 0]}>
-            <boxGeometry args={[1.2, 0.35, 0.08]} />
+            <boxGeometry args={[1, 0.35, 0.08]} />
             <meshStandardMaterial
               color="#a855f7"
               emissive="#7e22ce"
@@ -401,15 +398,11 @@ function GameScene({
   gameStarted,
   keysPressed,
   onReachDestination,
-  bgColor,
-  groundColor,
 }: {
   carPosition: THREE.Vector3;
   gameStarted: boolean;
   keysPressed: React.MutableRefObject<Set<string>>;
   onReachDestination: () => void;
-  bgColor: string;
-  groundColor: string;
 }) {
   useFrame((_, delta) => {
     if (!gameStarted) return;
@@ -428,7 +421,7 @@ function GameScene({
 
   return (
     <>
-      <color attach="background" args={[bgColor]} />
+      <color attach="background" args={["#e2e8e8"]} />
       <ambientLight intensity={0.95} />
       <directionalLight position={[2.5, 6, 3]} intensity={1.35} castShadow />
       <directionalLight position={[-3, 4, -2]} intensity={0.48} />
@@ -447,7 +440,7 @@ function GameScene({
       {/* Soft ground under road */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.04, 0]}>
         <planeGeometry args={[4, ROAD_LENGTH + 1]} />
-        <meshBasicMaterial color={groundColor} />
+        <meshBasicMaterial color="#d8e0e0" />
       </mesh>
     </>
   );
@@ -457,17 +450,12 @@ export function MiniGame({ onComplete }: { onComplete: () => void }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const carPositionRef = useRef(new THREE.Vector3(0, 0.12, START_Z));
   const keysPressed = useRef<Set<string>>(new Set());
-  const [loadingDone, setLoadingDone] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [gameStarted, setGameStarted] = useState(false);
   const [showInstructions, setShowInstructions] = useState(true);
-  const [finished, setFinished] = useState(false);
   const startCarAudioRef = useRef<HTMLAudioElement | null>(null);
   const carHonkAudioRef = useRef<HTMLAudioElement | null>(null);
   const gameStartedRef = useRef(false);
-  const finishedRef = useRef(false);
-  const bgColor = useThemeColor("--color-bg");
-  const groundColor = useThemeColor("--color-bg-elevated");
-  const [dark, setDark] = useDarkMode();
 
   const playSound = (
     ref: React.MutableRefObject<HTMLAudioElement | null>,
@@ -481,10 +469,10 @@ export function MiniGame({ onComplete }: { onComplete: () => void }) {
   };
 
   useEffect(() => {
-    document.documentElement.style.overflow = "hidden";
-    document.documentElement.style.scrollbarWidth = "none";
     document.body.style.overflow = "hidden";
     document.body.classList.remove("has-custom-cursor");
+
+    const loadingTimer = setTimeout(() => setLoading(false), 1800);
 
     const handleKeyDown = (e: KeyboardEvent) => {
       keysPressed.current.add(e.key);
@@ -520,8 +508,7 @@ export function MiniGame({ onComplete }: { onComplete: () => void }) {
     window.addEventListener("keyup", handleKeyUp);
 
     return () => {
-      document.documentElement.style.overflow = "";
-      document.documentElement.style.scrollbarWidth = "";
+      clearTimeout(loadingTimer);
       document.body.style.overflow = "";
       document.body.classList.add("has-custom-cursor");
       window.removeEventListener("keydown", handleKeyDown);
@@ -580,29 +567,22 @@ export function MiniGame({ onComplete }: { onComplete: () => void }) {
   };
 
   const handleReachDestination = () => {
-    if (finishedRef.current) return;
     if (gameStarted) {
-      finishedRef.current = true;
-      setFinished(true);
-      setTimeout(() => onComplete(), 1200);
+      onComplete();
     }
   };
 
   return (
     <div
       ref={rootRef}
-      className="fixed inset-0 z-[10001] flex h-dvh w-screen max-w-[100vw] overflow-hidden bg-bg"
+      className="fixed inset-0 z-[10001] flex h-dvh  max-w-[100vw] overflow-hidden bg-bg"
       aria-hidden="true"
       aria-busy="true"
       role="status"
     >
       <span className="sr-only">Mini Game</span>
 
-      {!loadingDone && (
-        <PageLoader letter="M" onComplete={() => setLoadingDone(true)} />
-      )}
-
-      {showInstructions && loadingDone && (
+      {showInstructions && (
         <div className="absolute inset-0 flex items-center justify-center bg-bg/90 z-10">
           <div className="text-center px-4">
             <h2 className="text-3xl font-bold text-ink mb-4">
@@ -627,23 +607,98 @@ export function MiniGame({ onComplete }: { onComplete: () => void }) {
         </div>
       )}
 
-      {finished && (
-        <div className="absolute inset-0 flex items-center justify-center bg-bg/80 backdrop-blur-sm z-10 animate-fade-in">
-          <div className="text-center">
-            <p className="text-sm font-mono text-accent tracking-widest uppercase mb-2">
-              Welcome
-            </p>
-            <h2 className="text-4xl font-bold text-ink">
-              You made it!
-            </h2>
-          </div>
-        </div>
-      )}
+      {/* Game canvas */}
+      <div
+        className="relative flex flex-col items-center h-full w-full md:w-3/5 cursor-pointer select-none"
+        onTouchStart={handleTouchStart}
+        onMouseDown={handleCanvasMouseDown}
+        onMouseUp={handleCanvasMouseUp}
+        onMouseLeave={handleForwardEnd}
+        onContextMenu={handleContextMenu}
+      >
+        <Canvas
+          orthographic
+          camera={{ position: [0, 8.5, 0], zoom: 38, near: 0.1, far: 40 }}
+          dpr={[1, 1.75]}
+          gl={{ antialias: true, alpha: true }}
+          onCreated={({ camera, gl }) => {
+            camera.lookAt(0, 0, 0);
+            camera.updateProjectionMatrix();
+            gl.setClearColor("#e2e8e8", 1);
+          }}
+          className="!h-full !w-full"
+        >
+          <GameScene
+            carPosition={carPositionRef.current}
+            gameStarted={gameStarted}
+            keysPressed={keysPressed}
+            onReachDestination={handleReachDestination}
+          />
+        </Canvas>
 
-      {/* Left description panel - desktop only */}
-      <div className="hidden md:flex h-full w-5/12 flex-col justify-center bg-bg border-r border-ink/10 px-12 lg:px-16 relative">
+        {/* Mobile on-screen controls */}
+        <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-6 pointer-events-none  z-20">
+          <button
+            type="button"
+            onTouchStart={handleForwardStart}
+            onTouchEnd={handleForwardEnd}
+            onMouseDown={handleForwardStart}
+            onMouseUp={handleForwardEnd}
+            onMouseLeave={handleForwardEnd}
+            className="pointer-events-auto w-20 h-20 rounded-full bg-ink/20 border-2 border-ink/30 flex items-center justify-center active:bg-ink/40 select-none "
+            aria-label="Move forward"
+          >
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-ink/70 "
+            >
+              <path d="M12 19V5M5 12l7-7 7 7" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={handleHonk}
+            className="pointer-events-auto w-20 h-20 rounded-full bg-ink/20 border-2 border-ink/30 flex items-center justify-center active:bg-ink/40 select-none "
+            aria-label="Honk"
+          >
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-ink/70"
+            >
+              <path d="M11 5L6 9H2v6h4l5 4V5z" />
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Mobile skip button */}
+        <button
+          type="button"
+          onClick={onComplete}
+          className="absolute top-4 right-4 z-20  px-4 py-1.5 text-xs font-mono text-ink/40 border border-ink/15 rounded-md bg-bg/80 backdrop-blur-sm active:bg-ink/10 cursor-pointer md-hidden"
+        >
+          Skip →
+        </button>
+      </div>
+
+      {/* Right description panel - desktop only */}
+      <div className="hidden md:flex h-full w-2/5 overflow-hidden overflow-x-hidden flex-col justify-center  bg-bg border-l border-ink/10 px-12 lg:px-16 overflow-y-auto relative">
         {/* Pointer arrow toward game */}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2">
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2">
           <svg
             width="28"
             height="28"
@@ -652,7 +707,7 @@ export function MiniGame({ onComplete }: { onComplete: () => void }) {
             className="text-ink/20"
           >
             <path
-              d="M9 18l6-6-6-6"
+              d="M15 18l-6-6 6-6"
               stroke="currentColor"
               strokeWidth="2"
               strokeLinecap="round"
@@ -661,7 +716,7 @@ export function MiniGame({ onComplete }: { onComplete: () => void }) {
           </svg>
         </div>
 
-        <div className="max-w-lg">
+        <div className="max-w-lg ">
           <p className="text-sm font-mono text-ink/40 tracking-widest uppercase mb-3">
             Welcome
           </p>
@@ -698,107 +753,12 @@ export function MiniGame({ onComplete }: { onComplete: () => void }) {
           <p className="text-sm text-ink/30 mb-6">
             Drive the car to the finish line to enter the portfolio.
           </p>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={onComplete}
-              className="px-5 py-2 text-sm font-mono text-ink/50 border border-ink/15 rounded-md hover:bg-ink/5 hover:text-ink/70 transition-colors cursor-pointer"
-            >
-              Skip →
-            </button>
-            <button
-              type="button"
-              onClick={() => setDark((d) => !d)}
-              className="grid size-9 place-items-center rounded border border-ink/30 text-ink-muted transition-all duration-300 hover:border-accent hover:text-accent cursor-pointer"
-              aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-            >
-              {dark ? (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="5" />
-                  <line x1="12" y1="1" x2="12" y2="3" />
-                  <line x1="12" y1="21" x2="12" y2="23" />
-                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                  <line x1="1" y1="12" x2="3" y2="12" />
-                  <line x1="21" y1="12" x2="23" y2="12" />
-                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                </svg>
-              ) : (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                </svg>
-              )}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Game canvas */}
-      <div
-        className="relative flex flex-col items-center h-full w-full md:w-7/12 cursor-pointer select-none"
-        onTouchStart={handleTouchStart}
-        onMouseDown={handleCanvasMouseDown}
-        onMouseUp={handleCanvasMouseUp}
-        onMouseLeave={handleForwardEnd}
-        onContextMenu={handleContextMenu}
-      >
-        <Canvas
-          orthographic
-          camera={{ position: [0, 8.5, 0], zoom: 38, near: 0.1, far: 40 }}
-          dpr={[1, 1.75]}
-          gl={{ antialias: true, alpha: true }}
-          onCreated={({ camera, gl }) => {
-            camera.lookAt(0, 0, 0);
-            camera.updateProjectionMatrix();
-            gl.setClearColor(bgColor, 1);
-          }}
-          className="!h-full !w-full"
-        >
-          <GameScene
-            carPosition={carPositionRef.current}
-            gameStarted={gameStarted}
-            keysPressed={keysPressed}
-            onReachDestination={handleReachDestination}
-            bgColor={bgColor}
-            groundColor={groundColor}
-          />
-        </Canvas>
-
-        {/* Mobile skip button */}
-        <button
-          type="button"
-          onClick={onComplete}
-          className="absolute top-4 right-4 z-20 md:hidden px-4 py-1.5 text-xs font-mono text-ink/40 border border-ink/15 rounded-md bg-bg/80 backdrop-blur-sm active:bg-ink/10 cursor-pointer"
-        >
-          Skip →
-        </button>
-
-        {/* Mobile on-screen controls */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-4 md:hidden">
           <button
             type="button"
-            onPointerDown={handleForwardStart}
-            onPointerUp={handleForwardEnd}
-            onPointerLeave={handleForwardEnd}
-            className="size-16 rounded-full border-2 border-ink/20 bg-bg/70 backdrop-blur-sm flex items-center justify-center active:border-accent active:bg-accent/20 transition-colors cursor-pointer"
-            aria-label="Drive forward"
+            onClick={onComplete}
+            className="px-5 py-2 text-sm font-mono text-ink/50 border border-ink/15 rounded-md hover:bg-ink/5 hover:text-ink/70 transition-colors cursor-pointer"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-ink/50">
-              <path d="M12 19V5M5 12l7-7 7 7" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            onPointerDown={handleHonk}
-            className="size-14 rounded-full border-2 border-ink/20 bg-bg/70 backdrop-blur-sm flex items-center justify-center active:border-accent active:bg-accent/20 transition-colors cursor-pointer"
-            aria-label="Honk"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-ink/50">
-              <path d="M11 5L6 9H2v6h4l5 4V5z" />
-              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-            </svg>
+            Skip →
           </button>
         </div>
       </div>

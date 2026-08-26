@@ -1,30 +1,18 @@
 import { useEffect, useRef } from "react";
-import { Canvas } from "@react-three/fiber";
 import { gsap, useGSAP } from "../lib/gsap";
-import { Car } from "./ScrollCar";
-import { useThemeColor } from "../hooks/useThemeColor";
 
 type PageLoaderProps = {
   letter: string;
   onComplete: () => void;
 };
 
-/**
- * Full-screen intro loader inspired by Brittany Chiang's hexagon draw sequence:
- * 1) Hex stroke draws in
- * 2) Letter fades in
- * 3) Logo scales down + fades
- * 4) Overlay fades out → main app
- */
 export function PageLoader({ letter, onComplete }: PageLoaderProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const hexRef = useRef<SVGPathElement>(null);
   const letterRef = useRef<SVGTextElement>(null);
   const logoRef = useRef<SVGSVGElement>(null);
+  const carRef = useRef<HTMLDivElement>(null);
   const completedRef = useRef(false);
-  const bgColor = useThemeColor("--color-bg");
-  const groundColor = useThemeColor("--color-bg-elevated");
-  const progressRef = useRef(0);
 
   const finish = () => {
     if (completedRef.current) return;
@@ -45,7 +33,8 @@ export function PageLoader({ letter, onComplete }: PageLoaderProps) {
     const logo = logoRef.current;
     const hex = hexRef.current;
     const mark = letterRef.current;
-    if (!root || !logo || !hex || !mark) return;
+    const car = carRef.current;
+    if (!root || !logo || !hex || !mark || !car) return;
 
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -53,6 +42,7 @@ export function PageLoader({ letter, onComplete }: PageLoaderProps) {
     if (reduced) {
       gsap.set(hex, { strokeDashoffset: 0 });
       gsap.set(mark, { opacity: 1 });
+      gsap.set(car, { x: -40, opacity: 1 });
       gsap.to(root, {
         autoAlpha: 0,
         duration: 0.25,
@@ -69,35 +59,55 @@ export function PageLoader({ letter, onComplete }: PageLoaderProps) {
     });
     gsap.set(mark, { opacity: 0 });
     gsap.set(logo, { opacity: 1, scale: 1, transformOrigin: "50% 50%" });
+    gsap.set(car, { x: -60, opacity: 0 });
     gsap.set(root, { autoAlpha: 1 });
 
     const tl = gsap.timeline({
       onComplete: finish,
     });
 
-    // Match Brittany Chiang timing (animejs → GSAP):
-    // path draw: delay 300, duration 1500, easeInOutQuart
-    // letter: duration 700
-    // logo shrink: delay 500, duration 300, scale 0.1, opacity 0
-    // overlay fade: duration 200
     tl.to(hex, {
       strokeDashoffset: 0,
       duration: 1.5,
       delay: 0.3,
       ease: "power4.inOut",
     })
-      .to(mark, {
-        opacity: 1,
-        duration: 0.7,
-        ease: "power4.inOut",
-      })
+      .to(
+        mark,
+        {
+          opacity: 1,
+          duration: 0.7,
+          ease: "power4.inOut",
+        },
+        "-=0.8",
+      )
+      .to(
+        car,
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power2.out",
+        },
+        "-=1",
+      )
       .to(logo, {
         opacity: 0,
         scale: 0.1,
         duration: 0.3,
-        delay: 0.5,
+        delay: 0.3,
         ease: "power4.inOut",
       })
+      .to(
+        car,
+        {
+          x: 60,
+          opacity: 0,
+          duration: 0.4,
+          ease: "power2.in",
+        },
+        "-=0.1",
+      )
       .to(root, {
         autoAlpha: 0,
         duration: 0.2,
@@ -116,7 +126,7 @@ export function PageLoader({ letter, onComplete }: PageLoaderProps) {
     >
       <span className="sr-only">Loading</span>
 
-      <div className="relative flex flex-col items-center">
+      <div className="relative flex flex-col items-center gap-6">
         <div className="w-[min(22vw,100px)] max-w-[100px] min-w-[72px]">
           <svg
             ref={logoRef}
@@ -153,34 +163,34 @@ export function PageLoader({ letter, onComplete }: PageLoaderProps) {
           </svg>
         </div>
 
-        <div className="h-[200px] w-[250px]">
-          <Canvas
-            orthographic
-            camera={{ position: [0, 0, 8], zoom: 55, near: 0.1, far: 40 }}
-            dpr={[1, 1.75]}
-            gl={{ antialias: true, alpha: true }}
-            onCreated={({ camera, gl }) => {
-              camera.lookAt(0, 0, 0);
-              camera.updateProjectionMatrix();
-              gl.setClearColor(bgColor, 0);
-            }}
-            className="!h-full !w-full"
+        <div
+          ref={carRef}
+          className="h-8 w-[250px] opacity-0"
+        >
+          <svg
+            viewBox="0 0 120 40"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-full w-full text-ink-muted"
           >
-            <color attach="background" args={[bgColor]} />
-            <ambientLight intensity={0.95} />
-            <directionalLight position={[2.5, 6, 3]} intensity={1.35} />
-            <directionalLight position={[-3, 4, -2]} intensity={0.48} />
-            <pointLight
-              position={[0, 0.7, 1.05]}
-              intensity={0.95}
-              color="#ffffff"
-            />
-            <Car
-              progressRef={progressRef}
-              shouldAnimate={false}
-              isLoader={true}
-            />
-          </Canvas>
+            {/* Car body */}
+            <rect x="20" y="14" width="80" height="16" rx="4" fill="currentColor" opacity="0.8" />
+            {/* Roof */}
+            <path d="M35 14 L45 4 L75 4 L85 14" fill="currentColor" opacity="0.6" />
+            {/* Windows */}
+            <path d="M47 5.5 L57 5.5 L57 13 L38 13 Z" fill="currentColor" opacity="0.3" />
+            <path d="M63 5.5 L73 5.5 L82 13 L63 13 Z" fill="currentColor" opacity="0.3" />
+            {/* Headlights */}
+            <rect x="96" y="17" width="6" height="4" rx="1" fill="currentColor" opacity="0.5" />
+            <rect x="96" y="24" width="6" height="3" rx="1" fill="currentColor" opacity="0.3" />
+            {/* Wheels */}
+            <circle cx="38" cy="32" r="5" fill="currentColor" opacity="0.9" />
+            <circle cx="38" cy="32" r="2.5" fill="currentColor" opacity="0.4" />
+            <circle cx="82" cy="32" r="5" fill="currentColor" opacity="0.9" />
+            <circle cx="82" cy="32" r="2.5" fill="currentColor" opacity="0.4" />
+            {/* Ground line */}
+            <line x1="10" y1="37" x2="110" y2="37" stroke="currentColor" strokeWidth="0.5" opacity="0.2" />
+          </svg>
         </div>
       </div>
     </div>

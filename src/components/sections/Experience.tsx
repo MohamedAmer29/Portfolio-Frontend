@@ -22,7 +22,7 @@ export function Experience({ jobs }: ExperienceProps) {
     <section className="scroll-mt-20 px-5 py-[72px] md:px-0 md:py-[100px]" id="experience">
       <div className="mx-auto w-full max-w-[1000px] md:w-[min(100%-10rem,1000px)]">
         <Reveal>
-          <SectionHeading number="02." title="Experience History" />
+          <SectionHeading number="04." title="Experience History" />
         </Reveal>
 
         <Reveal delay={0.1}>
