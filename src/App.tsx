@@ -7,9 +7,11 @@ import {
   useState,
 } from "react";
 import { CustomCursor } from "./components/CustomCursor";
+import { EclipseTransition } from "./components/EclipseTransition";
 import { MiniGame } from "./components/MiniGame";
 import { Navbar } from "./components/Navbar";
 import { useActiveSection } from "./hooks/useActiveSection";
+import { useDarkMode } from "./hooks/useDarkMode";
 import { PageLoader } from "./components/PageLoader";
 import { Sidebars } from "./components/Sidebars";
 import { About } from "./components/sections/About";
@@ -33,8 +35,10 @@ function App() {
   const [showLoader, setShowLoader] = useState(true);
   const [postGameLoading, setPostGameLoading] = useState(false);
   const [carShouldAnimate, setCarShouldAnimate] = useState(false);
+  const [eclipseTarget, setEclipseTarget] = useState<boolean | null>(null);
   const shellRef = useRef<HTMLDivElement>(null);
   const activeSection = useActiveSection(["about", "experience", "work", "contact"]);
+  const [dark, setDark] = useDarkMode();
 
   useEffect(() => {
     // Check if mini-game has been shown before
@@ -61,11 +65,21 @@ function App() {
   const onLoaderComplete = useCallback(() => {
     setReady(true);
     setShowLoader(false);
-    // Trigger car animation after a short delay to allow the main app to fade in
     setTimeout(() => {
       setCarShouldAnimate(true);
     }, 350);
   }, []);
+
+  const requestToggleTheme = useCallback(() => {
+    setEclipseTarget(!dark);
+  }, [dark]);
+
+  const onEclipseDone = useCallback(() => {
+    if (eclipseTarget !== null) {
+      setDark(eclipseTarget);
+      setEclipseTarget(null);
+    }
+  }, [eclipseTarget, setDark]);
 
   useGSAP(
     () => {
@@ -96,13 +110,17 @@ function App() {
 
       <CustomCursor />
 
+      {eclipseTarget !== null && (
+        <EclipseTransition toDark={eclipseTarget} onDone={onEclipseDone} />
+      )}
+
       <div
         ref={shellRef}
         className="opacity-0"
         aria-hidden={!ready}
         style={{ visibility: ready ? "visible" : "hidden" }}
       >
-        <Navbar letter={portfolio.logoLetter} resumeUrl={portfolio.resumeUrl} activeSection={activeSection} />
+        <Navbar letter={portfolio.logoLetter} resumeUrl={portfolio.resumeUrl} activeSection={activeSection} dark={dark} onToggleTheme={requestToggleTheme} />
         <Sidebars
           email={portfolio.email}
           github={portfolio.social.github}
