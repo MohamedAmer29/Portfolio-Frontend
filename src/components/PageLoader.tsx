@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
-import { gsap, useGSAP } from "../lib/gsap";
+import { useGSAP } from "../lib/gsap";
+
+declare const gsap: any
 
 type PageLoaderProps = {
   letter: string;
@@ -17,8 +19,10 @@ export function PageLoader({ letter, onComplete }: PageLoaderProps) {
   const finish = () => {
     if (completedRef.current) return;
     completedRef.current = true;
-    document.body.style.overflow = "";
-    onComplete();
+    requestAnimationFrame(() => {
+      document.body.style.overflow = "";
+      onComplete();
+    });
   };
 
   useEffect(() => {
@@ -60,7 +64,6 @@ export function PageLoader({ letter, onComplete }: PageLoaderProps) {
     gsap.set(mark, { opacity: 0 });
     gsap.set(logo, { opacity: 1, scale: 1, transformOrigin: "50% 50%" });
     gsap.set(car, { x: -60, opacity: 0 });
-    gsap.set(root, { autoAlpha: 1 });
 
     const tl = gsap.timeline({
       onComplete: finish,
@@ -173,22 +176,16 @@ export function PageLoader({ letter, onComplete }: PageLoaderProps) {
             xmlns="http://www.w3.org/2000/svg"
             className="h-full w-full text-ink-muted"
           >
-            {/* Car body */}
             <rect x="20" y="14" width="80" height="16" rx="4" fill="currentColor" opacity="0.8" />
-            {/* Roof */}
             <path d="M35 14 L45 4 L75 4 L85 14" fill="currentColor" opacity="0.6" />
-            {/* Windows */}
             <path d="M47 5.5 L57 5.5 L57 13 L38 13 Z" fill="currentColor" opacity="0.3" />
             <path d="M63 5.5 L73 5.5 L82 13 L63 13 Z" fill="currentColor" opacity="0.3" />
-            {/* Headlights */}
             <rect x="96" y="17" width="6" height="4" rx="1" fill="currentColor" opacity="0.5" />
             <rect x="96" y="24" width="6" height="3" rx="1" fill="currentColor" opacity="0.3" />
-            {/* Wheels */}
             <circle cx="38" cy="32" r="5" fill="currentColor" opacity="0.9" />
             <circle cx="38" cy="32" r="2.5" fill="currentColor" opacity="0.4" />
             <circle cx="82" cy="32" r="5" fill="currentColor" opacity="0.9" />
             <circle cx="82" cy="32" r="2.5" fill="currentColor" opacity="0.4" />
-            {/* Ground line */}
             <line x1="10" y1="37" x2="110" y2="37" stroke="currentColor" strokeWidth="0.5" opacity="0.2" />
           </svg>
         </div>

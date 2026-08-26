@@ -1,4 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/PlusJakartaSans.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url('/fonts/JetBrainsMono-Regular.woff2') format('woff2');
+}
+
 @import 'tailwindcss';
 
 @theme {
@@ -6,8 +21,8 @@
   --color-bg-elevated: #f4f7f7;
   --color-ink: #1a1f24;
   --color-ink-muted: #5c666e;
-  --color-ink-soft: #7a858e;
-  --color-accent: #7fadad;
+  --color-ink-soft: #55616b;
+  --color-accent: #456e6e;
   --color-accent-soft: rgba(127, 173, 173, 0.72);
   --color-project: #14191e;
 
@@ -32,7 +47,7 @@
   --color-bg-elevated: #1a1f24;
   --color-ink: #e2e8e8;
   --color-ink-muted: #8892a0;
-  --color-ink-soft: #6b7580;
+  --color-ink-soft: #7a858f;
   --color-accent: #94c4c4;
   --color-accent-soft: rgba(148, 196, 196, 0.18);
   --color-project: #0d1117;
@@ -140,6 +155,12 @@
   .writing-vertical {
     writing-mode: vertical-rl;
   }
+}
+
+/* Hero items hidden by default — GSAP animates them in as progressive enhancement.
+   The <h1> (LCP element) does NOT have this attribute, so it's always visible. */
+[data-hero-item] {
+  opacity: 0;
 }
 
 /* Custom cursor — dual element (dot + lagging ring) */

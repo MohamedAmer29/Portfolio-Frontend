@@ -1,5 +1,8 @@
 import { useRef, useMemo } from "react";
-import { gsap, useGSAP } from "../../lib/gsap";
+import { useGSAP } from "../../lib/gsap";
+
+declare const gsap: any
+
 import { Reveal } from "../Reveal";
 import { SectionHeading } from "../SectionHeading";
 import { education, academicFocus, type Education } from "./educationData";
@@ -47,7 +50,6 @@ function TimelineCard({ item, isLast }: { item: Education; isLast: boolean }) {
       data-education-entry
       className="relative grid gap-6 md:grid-cols-[100px_1fr] md:gap-8"
     >
-      {/* Year label - desktop only */}
       <div className="hidden md:flex md:flex-col md:items-end md:gap-1 md:pt-1">
         <span className="font-mono text-[13px] font-medium text-ink-muted">
           {item.startDate}
@@ -62,9 +64,7 @@ function TimelineCard({ item, isLast }: { item: Education; isLast: boolean }) {
         )}
       </div>
 
-      {/* Education card (contains the timeline node for hover) */}
       <div className="group/node relative mb-2 rounded-xl border border-ink/8 bg-bg-elevated/50 p-5 transition-all duration-300 hover:border-accent/20 hover:bg-bg-elevated hover:shadow-[0_4px_24px_rgba(127,173,173,0.08)] md:mb-8 md:p-6">
-        {/* Timeline node - positioned absolutely to the left of the card */}
         <div
           className="absolute -left-[calc(100px+2rem)] top-6 z-10 hidden md:block"
           data-timeline-node
@@ -75,7 +75,6 @@ function TimelineCard({ item, isLast }: { item: Education; isLast: boolean }) {
           </div>
         </div>
 
-        {/* Vertical connector line - desktop only */}
         {!isLast && (
           <div
             data-timeline-line
@@ -83,7 +82,6 @@ function TimelineCard({ item, isLast }: { item: Education; isLast: boolean }) {
           />
         )}
 
-        {/* Mobile year badge */}
         <div className="mb-3 flex items-center gap-3 md:hidden">
           <span className="font-mono text-[12px] font-medium text-accent">
             {item.startDate}
@@ -94,7 +92,6 @@ function TimelineCard({ item, isLast }: { item: Education; isLast: boolean }) {
           </span>
         </div>
 
-        {/* Header */}
         <div className="mb-3 flex items-start gap-3">
           <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg border border-ink/8 bg-ink/3 transition-all duration-300 group-hover/node:border-accent/25 group-hover/node:bg-accent/10">
             <GraduationIcon className="size-[18px] text-ink-soft transition-colors duration-300 group-hover/node:text-accent" />
@@ -110,7 +107,6 @@ function TimelineCard({ item, isLast }: { item: Education; isLast: boolean }) {
           </div>
         </div>
 
-        {/* Date range row - prominent display */}
         <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2">
           <div className="flex items-center gap-2 rounded-md border border-accent/20 bg-accent/8 px-3 py-1.5">
             <CalendarIcon className="size-3.5 text-accent" />
@@ -136,14 +132,12 @@ function TimelineCard({ item, isLast }: { item: Education; isLast: boolean }) {
           )}
         </div>
 
-        {/* Description */}
         {item.description && (
           <p className="mb-4 text-[14px] leading-relaxed text-ink-muted">
             {item.description}
           </p>
         )}
 
-        {/* Coursework */}
         {item.coursework && item.coursework.length > 0 && (
           <div>
             <h4 className="mb-2 font-mono text-[10px] uppercase tracking-widest text-ink-soft">
@@ -162,7 +156,6 @@ function TimelineCard({ item, isLast }: { item: Education; isLast: boolean }) {
           </div>
         )}
 
-        {/* Achievements */}
         {item.achievements && item.achievements.length > 0 && (
           <div className="mt-4">
             <h4 className="mb-2 font-mono text-[10px] uppercase tracking-widest text-ink-soft">
@@ -300,7 +293,6 @@ export function EducationSection() {
           </div>
         </Reveal>
 
-        {/* Timeline - no Reveal wrapper, GSAP handles all animation */}
         <div ref={timelineRef} className="relative">
           <div
             ref={lineRef}

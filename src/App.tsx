@@ -3,12 +3,8 @@ import {
   Suspense,
   useCallback,
   useEffect,
-  useRef,
   useState,
 } from "react";
-import { CustomCursor } from "./components/CustomCursor";
-import { EclipseTransition } from "./components/EclipseTransition";
-import { MiniGame } from "./components/MiniGame";
 import { Navbar } from "./components/Navbar";
 import { useActiveSection } from "./hooks/useActiveSection";
 import { useDarkMode } from "./hooks/useDarkMode";
@@ -23,11 +19,26 @@ import { Projects } from "./components/sections/Projects";
 import { EducationSection } from "./components/education/EducationSection";
 import { SkillsSection } from "./components/skills/SkillsSection";
 import { portfolio } from "./data/portfolio";
-import { gsap, useGSAP } from "./lib/gsap";
+
+const CustomCursor = lazy(() =>
+  import("./components/CustomCursor").then((m) => ({ default: m.CustomCursor })),
+);
 
 const ScrollCar = lazy(() =>
-  import("./components/ScrollCar").then((module) => ({
+  import("./components/scrollcar/index").then((module) => ({
     default: module.ScrollCar,
+  })),
+);
+
+const EclipseTransition = lazy(() =>
+  import("./components/EclipseTransition").then((module) => ({
+    default: module.EclipseTransition,
+  })),
+);
+
+const MiniGame = lazy(() =>
+  import("./components/minigame/index").then((module) => ({
+    default: module.MiniGame,
   })),
 );
 
@@ -38,12 +49,10 @@ function App() {
   const [postGameLoading, setPostGameLoading] = useState(false);
   const [carShouldAnimate, setCarShouldAnimate] = useState(false);
   const [eclipseTarget, setEclipseTarget] = useState<boolean | null>(null);
-  const shellRef = useRef<HTMLDivElement>(null);
   const activeSection = useActiveSection(["about", "skills", "education", "experience", "work", "contact"]);
   const [dark, setDark] = useDarkMode();
 
   useEffect(() => {
-    // Check if mini-game has been shown before
     const hasSeenMiniGame = localStorage.getItem("hasSeenMiniGame");
     if (!hasSeenMiniGame) {
       setShowMiniGame(true);
@@ -83,21 +92,13 @@ function App() {
     }
   }, [eclipseTarget, setDark]);
 
-  useGSAP(
-    () => {
-      if (!ready || !shellRef.current) return;
-      gsap.fromTo(
-        shellRef.current,
-        { autoAlpha: 0 },
-        { autoAlpha: 1, duration: 0.35, ease: "power2.out" },
-      );
-    },
-    { dependencies: [ready] },
-  );
-
   return (
     <>
-      {showMiniGame ? <MiniGame onComplete={onMiniGameComplete} /> : null}
+      {showMiniGame ? (
+        <Suspense fallback={null}>
+          <MiniGame onComplete={onMiniGameComplete} />
+        </Suspense>
+      ) : null}
 
       {postGameLoading && (
         <PageLoader letter={portfolio.logoLetter} onComplete={() => {}} />
@@ -110,17 +111,18 @@ function App() {
         />
       ) : null}
 
-      <CustomCursor />
+      <Suspense fallback={null}>
+        <CustomCursor />
+      </Suspense>
 
       {eclipseTarget !== null && (
-        <EclipseTransition toDark={eclipseTarget} onDone={onEclipseDone} />
+        <Suspense fallback={null}>
+          <EclipseTransition toDark={eclipseTarget} onDone={onEclipseDone} />
+        </Suspense>
       )}
 
       <div
-        ref={shellRef}
-        className="opacity-0"
         aria-hidden={!ready}
-        style={{ visibility: ready ? "visible" : "hidden" }}
       >
         <Navbar letter={portfolio.logoLetter} resumeUrl={portfolio.resumeUrl} activeSection={activeSection} dark={dark} onToggleTheme={requestToggleTheme} />
         <Sidebars
@@ -141,7 +143,6 @@ function App() {
             name={portfolio.fullName}
             tagline={portfolio.hero.tagline}
             bio={portfolio.hero.bio}
-            ready={ready}
           />
           <About
             paragraphs={portfolio.about.paragraphs}

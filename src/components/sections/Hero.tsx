@@ -1,22 +1,24 @@
 import { useRef } from 'react'
-import { gsap, useGSAP } from '../../lib/gsap'
+import { useGSAP } from '../../lib/gsap'
+
+declare const gsap: any
 
 type HeroProps = {
   greeting: string
   name: string
   tagline: string
   bio: string
-  ready: boolean
 }
 
-export function Hero({ greeting, name, tagline, bio, ready }: HeroProps) {
+export function Hero({ greeting, name, tagline, bio }: HeroProps) {
   const rootRef = useRef<HTMLElement>(null)
 
   useGSAP(
     () => {
-      if (!ready || !rootRef.current) return
+      if (!rootRef.current) return
 
       const items = rootRef.current.querySelectorAll('[data-hero-item]')
+
       gsap.fromTo(
         items,
         { autoAlpha: 0, y: 28 },
@@ -30,7 +32,7 @@ export function Hero({ greeting, name, tagline, bio, ready }: HeroProps) {
         },
       )
     },
-    { dependencies: [ready] },
+    [],
   )
 
   return (
@@ -42,32 +44,31 @@ export function Hero({ greeting, name, tagline, bio, ready }: HeroProps) {
       <div className="mx-auto w-full max-w-[720px] md:w-[min(100%-10rem,1000px)]">
         <p
           data-hero-item
-          className="mb-5 font-mono text-[13px] tracking-wide text-accent opacity-0 md:text-[14px]"
+          className="mb-5 font-mono text-[13px] tracking-wide text-accent md:text-[14px]"
         >
           {greeting}
         </p>
         <h1
-          data-hero-item
-          className="mb-2 font-sans text-hero-name font-extrabold leading-[1.05] tracking-[-0.03em] text-ink opacity-0"
+          className="mb-2 font-sans text-hero-name font-extrabold leading-[1.05] tracking-[-0.03em] text-ink"
         >
           {name}
         </h1>
-        <h2
-          data-hero-item
-          className="mb-6 font-sans text-hero-tag font-bold leading-[1.1] tracking-[-0.025em] text-ink-muted opacity-0"
-        >
-          {tagline}
-        </h2>
         <p
           data-hero-item
-          className="max-w-[34rem] text-[17px] leading-[1.8] text-ink-muted opacity-0 md:text-body"
+          className="mb-6 font-sans text-hero-tag font-bold leading-[1.1] tracking-[-0.025em] text-ink-muted"
+        >
+          {tagline}
+        </p>
+        <p
+          data-hero-item
+          className="max-w-[34rem] text-[17px] leading-[1.8] text-ink-muted md:text-body"
         >
           {bio}
         </p>
 
         <a
           data-hero-item
-          className="mt-12 inline-flex text-ink-muted opacity-0 transition-colors duration-300 hover:text-accent"
+          className="mt-12 inline-flex text-ink-muted transition-colors duration-300 hover:text-accent"
           href="#about"
           aria-label="Scroll to about"
         >

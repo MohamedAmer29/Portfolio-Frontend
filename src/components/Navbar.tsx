@@ -31,8 +31,11 @@ export function Navbar({ letter, resumeUrl, activeSection, dark, onToggleTheme }
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
+    const raf = requestAnimationFrame(() => {
+      document.body.style.overflow = open ? "hidden" : "";
+    });
     return () => {
+      cancelAnimationFrame(raf);
       document.body.style.overflow = "";
     };
   }, [open]);
@@ -41,7 +44,7 @@ export function Navbar({ letter, resumeUrl, activeSection, dark, onToggleTheme }
 
   return (
     <>
-      <header
+      <nav
         className={`fixed inset-x-0 top-0 z-[100] flex h-[70px] items-center justify-between px-[18px] backdrop-blur-md backdrop-saturate-200 transition duration-300 md:h-20 md:px-10 ${
           scrolled ? "bg-bg/10 shadow-nav" : "bg-bg/10"
         }`}
@@ -106,7 +109,7 @@ export function Navbar({ letter, resumeUrl, activeSection, dark, onToggleTheme }
             />
           </span>
         </button>
-      </header>
+      </nav>
 
       <div
         className={`fixed inset-0 z-[98] bg-ink/30 transition md:hidden ${

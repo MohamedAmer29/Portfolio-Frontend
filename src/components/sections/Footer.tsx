@@ -49,6 +49,9 @@ export function Footer({ name, github, linkedin }: FooterProps) {
             {name}
           </a>
         </p>
+        <p className="mt-2 text-ink-soft">
+          &copy; {new Date().getFullYear()} {name} All rights reserved.
+        </p>
         <div className="mt-5 flex justify-center gap-5 xl:hidden">
           <a
             href={github}

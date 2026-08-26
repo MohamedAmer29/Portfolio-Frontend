@@ -52,13 +52,13 @@ function SolarEclipseScene({ onDone }: { onDone: () => void }) {
       </mesh>
 
       {/* Corona glow */}
-      <pointLight
+      {/* <pointLight
         ref={coronaRef}
         position={[0, 0, 0.5]}
         intensity={0}
         color="#fbbf24"
         distance={8}
-      />
+      /> */}
 
       {/* Moon blocking the sun */}
       <mesh ref={moonRef} position={[-2.5, 0.8, 0]}>

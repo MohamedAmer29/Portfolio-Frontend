@@ -1,5 +1,7 @@
 import { useRef, type ReactNode } from 'react'
-import { gsap, useGSAP } from '../lib/gsap'
+import { useGSAP } from '../lib/gsap'
+
+declare const gsap: any
 
 type RevealProps = {
   children: ReactNode
@@ -42,4 +44,3 @@ export function Reveal({ children, className = '', delay = 0, y = 32 }: RevealPr
     </div>
   )
 }
-
