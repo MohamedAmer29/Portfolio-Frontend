@@ -22,32 +22,49 @@ function GraduationIcon({ className }: { className?: string }) {
   );
 }
 
+function CalendarIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <rect x="2" y="3" width="12" height="11" rx="1.5" />
+      <line x1="2" y1="6.5" x2="14" y2="6.5" />
+      <line x1="5.5" y1="1.5" x2="5.5" y2="4.5" />
+      <line x1="10.5" y1="1.5" x2="10.5" y2="4.5" />
+    </svg>
+  );
+}
+
 function TimelineCard({ item, isLast }: { item: Education; isLast: boolean }) {
   return (
     <div
       data-education-entry
       className="relative grid gap-6 md:grid-cols-[100px_1fr] md:gap-8"
     >
-      {/* Year label */}
-      <div className="flex items-start gap-4 md:flex-col md:items-end md:gap-1 md:pt-1">
+      {/* Year label - desktop only */}
+      <div className="hidden md:flex md:flex-col md:items-end md:gap-1 md:pt-1">
         <span className="font-mono text-[13px] font-medium text-ink-muted">
           {item.startDate}
         </span>
         {!isLast && (
-          <span className="hidden font-mono text-[10px] text-ink-soft md:block">
-            —
-          </span>
+          <span className="font-mono text-[10px] text-ink-soft">—</span>
         )}
         {!isLast && (
-          <span className="hidden font-mono text-[13px] text-ink-muted md:block">
+          <span className="font-mono text-[13px] text-ink-muted">
             {item.endDate}
           </span>
         )}
       </div>
 
-      {/* Education card with timeline node */}
+      {/* Education card (contains the timeline node for hover) */}
       <div className="group/node relative mb-2 rounded-xl border border-ink/8 bg-bg-elevated/50 p-5 transition-all duration-300 hover:border-accent/20 hover:bg-bg-elevated hover:shadow-[0_4px_24px_rgba(127,173,173,0.08)] md:mb-8 md:p-6">
-        {/* Timeline node - desktop only */}
+        {/* Timeline node - positioned absolutely to the left of the card */}
         <div
           className="absolute -left-[calc(100px+2rem)] top-6 z-10 hidden md:block"
           data-timeline-node
@@ -62,9 +79,10 @@ function TimelineCard({ item, isLast }: { item: Education; isLast: boolean }) {
         {!isLast && (
           <div
             data-timeline-line
-            className="absolute -left-[calc(100px+1.75rem)] top-[42px] h-[calc(100%+24px)] w-px bg-gradient-to-b from-accent/30 via-accent/15 to-transparent hidden md:block"
+            className="absolute -left-[calc(100px+1.75rem)] top-[42px] hidden h-[calc(100%+24px)] w-px bg-gradient-to-b from-accent/30 via-accent/15 to-transparent md:block"
           />
         )}
+
         {/* Mobile year badge */}
         <div className="mb-3 flex items-center gap-3 md:hidden">
           <span className="font-mono text-[12px] font-medium text-accent">
@@ -92,10 +110,20 @@ function TimelineCard({ item, isLast }: { item: Education; isLast: boolean }) {
           </div>
         </div>
 
-        {/* Location + dates row */}
-        <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-ink-soft">
+        {/* Date range row - prominent display */}
+        <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <div className="flex items-center gap-2 rounded-md border border-accent/20 bg-accent/8 px-3 py-1.5">
+            <CalendarIcon className="size-3.5 text-accent" />
+            <span className="font-mono text-[12px] font-medium text-ink">
+              {item.startDate}
+            </span>
+            <span className="font-mono text-[11px] text-ink-soft">→</span>
+            <span className="font-mono text-[12px] font-medium text-ink">
+              {item.endDate}
+            </span>
+          </div>
           {item.location && (
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center gap-1.5 font-mono text-[11px] text-ink-soft">
               <svg
                 viewBox="0 0 16 16"
                 fill="currentColor"
@@ -106,9 +134,6 @@ function TimelineCard({ item, isLast }: { item: Education; isLast: boolean }) {
               {item.location}
             </span>
           )}
-          <span className="hidden md:inline">
-            {item.startDate} — {item.endDate}
-          </span>
         </div>
 
         {/* Description */}
@@ -169,40 +194,13 @@ export function EducationSection() {
 
   useGSAP(
     () => {
-      if (!lineRef.current) return;
-
-      const reducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
-      if (reducedMotion) return;
-
-      gsap.fromTo(
-        lineRef.current,
-        { scaleY: 0 },
-        {
-          scaleY: 1,
-          duration: 1.2,
-          ease: "power3.out",
-          transformOrigin: "top",
-          scrollTrigger: {
-            trigger: lineRef.current,
-            start: "top 80%",
-            toggleActions: "play none none none",
-          },
-        },
-      );
-    },
-    { scope: sectionRef },
-  );
-
-  useGSAP(
-    () => {
       if (!timelineRef.current) return;
 
       const reducedMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
 
+      const line = lineRef.current;
       const nodes = Array.from(
         timelineRef.current.querySelectorAll("[data-timeline-node]"),
       );
@@ -211,42 +209,57 @@ export function EducationSection() {
       );
 
       if (reducedMotion) {
-        gsap.set([...nodes, ...cards], { opacity: 1 });
+        if (line) gsap.set(line, { scaleY: 1 });
+        gsap.set([...nodes, ...cards], { opacity: 1, x: 0 });
         return;
       }
 
-      gsap.fromTo(
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: timelineRef.current,
+          start: "top 80%",
+          toggleActions: "play none none none",
+        },
+      });
+
+      if (line) {
+        tl.fromTo(
+          line,
+          { scaleY: 0 },
+          {
+            scaleY: 1,
+            duration: 1.0,
+            ease: "power3.out",
+            transformOrigin: "top",
+          },
+          0,
+        );
+      }
+
+      tl.fromTo(
         nodes,
         { scale: 0, opacity: 0 },
         {
           scale: 1,
           opacity: 1,
-          duration: 0.5,
+          duration: 0.4,
           stagger: 0.15,
           ease: "back.out(1.6)",
-          scrollTrigger: {
-            trigger: timelineRef.current,
-            start: "top 75%",
-            toggleActions: "play none none none",
-          },
         },
+        0.15,
       );
 
-      gsap.fromTo(
+      tl.fromTo(
         cards,
-        { autoAlpha: 0, x: -20 },
+        { autoAlpha: 0, x: -24 },
         {
           autoAlpha: 1,
           x: 0,
-          duration: 0.7,
-          stagger: 0.18,
+          duration: 0.6,
+          stagger: 0.15,
           ease: "power3.out",
-          scrollTrigger: {
-            trigger: timelineRef.current,
-            start: "top 70%",
-            toggleActions: "play none none none",
-          },
         },
+        0.1,
       );
     },
     { scope: sectionRef },
@@ -263,14 +276,12 @@ export function EducationSection() {
           <SectionHeading number="03." title="Education" />
         </Reveal>
 
-        {/* Subtitle */}
         <Reveal delay={0.04}>
           <p className="mb-8 max-w-[480px] text-[15px] leading-relaxed text-ink-muted md:mb-10">
             Building the foundation behind my engineering journey.
           </p>
         </Reveal>
 
-        {/* Academic focus tags */}
         <Reveal delay={0.08}>
           <div className="mb-10 md:mb-12">
             <h3 className="mb-3 font-mono text-[10px] uppercase tracking-widest text-ink-soft">
@@ -289,40 +300,24 @@ export function EducationSection() {
           </div>
         </Reveal>
 
-        {/* Timeline */}
-        <Reveal delay={0.12}>
-          <div ref={timelineRef} className="relative">
-            {/* Animated vertical line - desktop only */}
-            <div
-              ref={lineRef}
-              className="absolute -left-[14px] top-0 hidden h-full w-px origin-top bg-gradient-to-b from-accent/30 via-accent/20 to-accent/5 md:block"
-            />
+        {/* Timeline - no Reveal wrapper, GSAP handles all animation */}
+        <div ref={timelineRef} className="relative">
+          <div
+            ref={lineRef}
+            className="absolute -left-[14px] top-0 hidden h-full w-px origin-top bg-gradient-to-b from-accent/30 via-accent/20 to-accent/5 md:block"
+          />
+          <div className="absolute left-[5px] top-0 h-full w-px bg-gradient-to-b from-accent/30 via-accent/15 to-transparent md:hidden" />
 
-            {/* Mobile vertical line */}
-            <div className="absolute left-[5px] top-0 h-full w-px bg-gradient-to-b from-accent/30 via-accent/15 to-transparent md:hidden" />
-
-            <div className="space-y-4 md:space-y-0">
-              {entries.map((item, index) => (
-                <TimelineCard
-                  key={item.id}
-                  item={item}
-                  isLast={index === entries.length - 1}
-                />
-              ))}
-            </div>
+          <div className="space-y-4 md:space-y-0">
+            {entries.map((item, index) => (
+              <TimelineCard
+                key={item.id}
+                item={item}
+                isLast={index === entries.length - 1}
+              />
+            ))}
           </div>
-        </Reveal>
-
-        {/* Connection hint */}
-        <Reveal delay={0.2}>
-          <div className="mt-10 flex items-center gap-3 md:mt-12">
-            <div className="h-px flex-1 bg-gradient-to-r from-accent/20 to-transparent" />
-            <span className="font-mono text-[10px] uppercase tracking-widest text-ink-soft">
-              Education → Experience
-            </span>
-            <div className="h-px flex-1 bg-gradient-to-l from-accent/20 to-transparent" />
-          </div>
-        </Reveal>
+        </div>
       </div>
     </section>
   );

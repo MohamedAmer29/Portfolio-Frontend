@@ -25,14 +25,16 @@ export const skills: Skill[] = [
   {
     name: "React",
     category: "frontend",
-    description: "Component-based UI library for building interactive web applications",
+    description:
+      "Component-based UI library for building interactive web applications",
     related: ["TypeScript", "Redux", "TanStack Query"],
     level: 95,
   },
   {
     name: "TypeScript",
     category: "frontend",
-    description: "Typed superset of JavaScript for scalable, maintainable codebases",
+    description:
+      "Typed superset of JavaScript for scalable, maintainable codebases",
     related: ["React", "Node.js", "NestJS"],
     level: 92,
   },
@@ -53,7 +55,8 @@ export const skills: Skill[] = [
   {
     name: "CSS3",
     category: "frontend",
-    description: "Styling language for layout, animations, and responsive design",
+    description:
+      "Styling language for layout, animations, and responsive design",
     related: ["Tailwind CSS", "HTML5"],
     level: 90,
   },
@@ -82,7 +85,8 @@ export const skills: Skill[] = [
   {
     name: "Node.js",
     category: "backend",
-    description: "JavaScript runtime for building scalable server-side applications",
+    description:
+      "JavaScript runtime for building scalable server-side applications",
     related: ["Express.js", "NestJS", "TypeScript"],
     level: 88,
   },
@@ -117,7 +121,8 @@ export const skills: Skill[] = [
   {
     name: "WebSockets",
     category: "backend",
-    description: "Full-duplex communication channels over a single TCP connection",
+    description:
+      "Full-duplex communication channels over a single TCP connection",
     related: ["Node.js", "Redis"],
     level: 75,
   },
@@ -132,7 +137,8 @@ export const skills: Skill[] = [
   {
     name: "MySQL",
     category: "database",
-    description: "Widely-used open-source relational database management system",
+    description:
+      "Widely-used open-source relational database management system",
     related: ["TypeORM"],
     level: 80,
   },
@@ -146,7 +152,8 @@ export const skills: Skill[] = [
   {
     name: "TypeORM",
     category: "database",
-    description: "TypeScript ORM for Node.js with support for multiple databases",
+    description:
+      "TypeScript ORM for Node.js with support for multiple databases",
     related: ["PostgreSQL", "MySQL", "NestJS"],
     level: 80,
   },
@@ -154,14 +161,16 @@ export const skills: Skill[] = [
   {
     name: "Docker",
     category: "devops",
-    description: "Platform for developing, shipping, and running containerized apps",
+    description:
+      "Platform for developing, shipping, and running containerized apps",
     related: ["Linux", "CI/CD"],
     level: 82,
   },
   {
     name: "Redis",
     category: "devops",
-    description: "In-memory data store used as cache, message broker, and database",
+    description:
+      "In-memory data store used as cache, message broker, and database",
     related: ["Docker", "WebSockets"],
     level: 78,
   },
@@ -175,7 +184,8 @@ export const skills: Skill[] = [
   {
     name: "GitHub",
     category: "devops",
-    description: "Cloud platform for version control and collaborative development",
+    description:
+      "Cloud platform for version control and collaborative development",
     related: ["Git", "CI/CD"],
     level: 88,
   },
@@ -189,7 +199,8 @@ export const skills: Skill[] = [
   {
     name: "CI/CD",
     category: "devops",
-    description: "Automated pipeline for testing, building, and deploying software",
+    description:
+      "Automated pipeline for testing, building, and deploying software",
     related: ["Docker", "GitHub"],
     level: 78,
   },
@@ -232,7 +243,8 @@ export const skills: Skill[] = [
   {
     name: "CNN",
     category: "ai",
-    description: "Deep learning architecture for image recognition and analysis",
+    description:
+      "Deep learning architecture for image recognition and analysis",
     related: ["Machine Learning", "Computer Vision"],
     level: 70,
   },

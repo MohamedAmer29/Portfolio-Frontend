@@ -82,7 +82,7 @@ function Road() {
       ))}
 
       {/* Portfolio destination line */}
-      <group position={[Math.sin(END_Z * 0.5) * 0.6, 0, END_Z]}>
+      <group position={[Math.sin(END_Z * 0.5) * 0.15, 0, END_Z]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.001, 0]}>
           <planeGeometry args={[ROAD_WIDTH, 0.16]} />
           <meshStandardMaterial
@@ -150,13 +150,13 @@ function GameCar({
   useFrame(() => {
     if (!group.current) return;
 
-    // Update position from prop with curve - more curvy
+    // Update position from prop with curve - match road curve
     group.current.position.z = position.z;
-    group.current.position.x = Math.sin(position.z * 0.5) * 0.6;
+    group.current.position.x = Math.sin(position.z * 0.5) * 0.15;
 
-    // Rotate car to follow the curve - more curvy
+    // Rotate car to follow the curve - match road curve
     const nextZ = position.z - 0.1;
-    const nextX = Math.sin(nextZ * 0.5) * 0.6;
+    const nextX = Math.sin(nextZ * 0.5) * 0.15;
     const angle = Math.atan2(
       nextX - group.current.position.x,
       nextZ - position.z,
@@ -470,7 +470,6 @@ export function MiniGame({ onComplete }: { onComplete: () => void }) {
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
-    document.body.classList.remove("has-custom-cursor");
 
     const loadingTimer = setTimeout(() => setLoading(false), 1800);
 
@@ -510,7 +509,6 @@ export function MiniGame({ onComplete }: { onComplete: () => void }) {
     return () => {
       clearTimeout(loadingTimer);
       document.body.style.overflow = "";
-      document.body.classList.add("has-custom-cursor");
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
       if (startCarAudioRef.current) {
@@ -607,98 +605,10 @@ export function MiniGame({ onComplete }: { onComplete: () => void }) {
         </div>
       )}
 
-      {/* Game canvas */}
-      <div
-        className="relative flex flex-col items-center h-full w-full md:w-3/5 cursor-pointer select-none"
-        onTouchStart={handleTouchStart}
-        onMouseDown={handleCanvasMouseDown}
-        onMouseUp={handleCanvasMouseUp}
-        onMouseLeave={handleForwardEnd}
-        onContextMenu={handleContextMenu}
-      >
-        <Canvas
-          orthographic
-          camera={{ position: [0, 8.5, 0], zoom: 38, near: 0.1, far: 40 }}
-          dpr={[1, 1.75]}
-          gl={{ antialias: true, alpha: true }}
-          onCreated={({ camera, gl }) => {
-            camera.lookAt(0, 0, 0);
-            camera.updateProjectionMatrix();
-            gl.setClearColor("#e2e8e8", 1);
-          }}
-          className="!h-full !w-full"
-        >
-          <GameScene
-            carPosition={carPositionRef.current}
-            gameStarted={gameStarted}
-            keysPressed={keysPressed}
-            onReachDestination={handleReachDestination}
-          />
-        </Canvas>
-
-        {/* Mobile on-screen controls */}
-        <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-6 pointer-events-none  z-20">
-          <button
-            type="button"
-            onTouchStart={handleForwardStart}
-            onTouchEnd={handleForwardEnd}
-            onMouseDown={handleForwardStart}
-            onMouseUp={handleForwardEnd}
-            onMouseLeave={handleForwardEnd}
-            className="pointer-events-auto w-20 h-20 rounded-full bg-ink/20 border-2 border-ink/30 flex items-center justify-center active:bg-ink/40 select-none "
-            aria-label="Move forward"
-          >
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-ink/70 "
-            >
-              <path d="M12 19V5M5 12l7-7 7 7" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            onClick={handleHonk}
-            className="pointer-events-auto w-20 h-20 rounded-full bg-ink/20 border-2 border-ink/30 flex items-center justify-center active:bg-ink/40 select-none "
-            aria-label="Honk"
-          >
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-ink/70"
-            >
-              <path d="M11 5L6 9H2v6h4l5 4V5z" />
-              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Mobile skip button */}
-        <button
-          type="button"
-          onClick={onComplete}
-          className="absolute top-4 right-4 z-20  px-4 py-1.5 text-xs font-mono text-ink/40 border border-ink/15 rounded-md bg-bg/80 backdrop-blur-sm active:bg-ink/10 cursor-pointer md-hidden"
-        >
-          Skip →
-        </button>
-      </div>
-
-      {/* Right description panel - desktop only */}
-      <div className="hidden md:flex h-full w-2/5 overflow-hidden overflow-x-hidden flex-col justify-center  bg-bg border-l border-ink/10 px-12 lg:px-16 overflow-y-auto relative">
+      {/* Left description panel - desktop only */}
+      <div className="hidden md:flex h-full w-5/12 overflow-hidden overflow-x-hidden flex-col justify-center bg-bg border-r border-ink/10 px-12 lg:px-16 overflow-y-auto relative">
         {/* Pointer arrow toward game */}
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2">
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2">
           <svg
             width="28"
             height="28"
@@ -707,7 +617,7 @@ export function MiniGame({ onComplete }: { onComplete: () => void }) {
             className="text-ink/20"
           >
             <path
-              d="M15 18l-6-6 6-6"
+              d="M9 18l6-6-6-6"
               stroke="currentColor"
               strokeWidth="2"
               strokeLinecap="round"
@@ -761,6 +671,94 @@ export function MiniGame({ onComplete }: { onComplete: () => void }) {
             Skip →
           </button>
         </div>
+      </div>
+
+      {/* Game canvas */}
+      <div
+        className="relative flex flex-col items-center h-full w-full md:w-7/12 cursor-pointer select-none"
+        onTouchStart={handleTouchStart}
+        onMouseDown={handleCanvasMouseDown}
+        onMouseUp={handleCanvasMouseUp}
+        onMouseLeave={handleForwardEnd}
+        onContextMenu={handleContextMenu}
+      >
+        <Canvas
+          orthographic
+          camera={{ position: [0, 8.5, 0], zoom: 38, near: 0.1, far: 40 }}
+          dpr={[1, 1.75]}
+          gl={{ antialias: true, alpha: true }}
+          onCreated={({ camera, gl }) => {
+            camera.lookAt(0, 0, 0);
+            camera.updateProjectionMatrix();
+            gl.setClearColor("#e2e8e8", 1);
+          }}
+          className="!h-full !w-full"
+        >
+          <GameScene
+            carPosition={carPositionRef.current}
+            gameStarted={gameStarted}
+            keysPressed={keysPressed}
+            onReachDestination={handleReachDestination}
+          />
+        </Canvas>
+
+        {/* Mobile on-screen controls */}
+        <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-6 pointer-events-none  z-20 md:hidden">
+          <button
+            type="button"
+            onTouchStart={handleForwardStart}
+            onTouchEnd={handleForwardEnd}
+            onMouseDown={handleForwardStart}
+            onMouseUp={handleForwardEnd}
+            onMouseLeave={handleForwardEnd}
+            className="pointer-events-auto w-20 h-20 rounded-full bg-ink/20 border-2 border-ink/30 flex items-center justify-center active:bg-ink/40 select-none "
+            aria-label="Move forward"
+          >
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-ink/70 "
+            >
+              <path d="M12 19V5M5 12l7-7 7 7" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={handleHonk}
+            className="pointer-events-auto w-20 h-20 rounded-full bg-ink/20 border-2 border-ink/30 flex items-center justify-center active:bg-ink/40 select-none "
+            aria-label="Honk"
+          >
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-ink/70"
+            >
+              <path d="M11 5L6 9H2v6h4l5 4V5z" />
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Mobile skip button */}
+        <button
+          type="button"
+          onClick={onComplete}
+          className="absolute top-4 right-4 z-20  px-4 py-1.5 text-xs font-mono text-ink/40 border border-ink/15 rounded-md bg-bg/80 backdrop-blur-sm active:bg-ink/10 cursor-pointer md:hidden"
+        >
+          Skip →
+        </button>
       </div>
     </div>
   );

@@ -160,12 +160,12 @@ function Road({
             </mesh>
 
             {/* Left post & sign indicator */}
-            <mesh position={[-0.72, 0.3, 0]}>
+            <mesh position={[-0.675, 0.3, 0]}>
               <cylinderGeometry args={[0.025, 0.025, 0.6, 12]} />
               <meshStandardMaterial color="#3a4850" roughness={0.5} />
             </mesh>
             <mesh
-              position={[-0.72, 0.55, 0]}
+              position={[-0.675, 0.55, 0]}
               onClick={(e) => {
                 e.stopPropagation();
                 onSelectStation(station.id);
@@ -180,12 +180,12 @@ function Road({
             </mesh>
 
             {/* Right post & sign indicator */}
-            <mesh position={[0.72, 0.3, 0]}>
+            <mesh position={[0.675, 0.3, 0]}>
               <cylinderGeometry args={[0.025, 0.025, 0.6, 12]} />
               <meshStandardMaterial color="#3a4850" roughness={0.5} />
             </mesh>
             <mesh
-              position={[0.72, 0.55, 0]}
+              position={[0.675, 0.55, 0]}
               onClick={(e) => {
                 e.stopPropagation();
                 onSelectStation(station.id);
@@ -609,6 +609,20 @@ export function ScrollCar({ shouldAnimate }: { shouldAnimate: boolean }) {
         } else {
           progress = 0;
         }
+
+        // Apply specific offsets for certain stations to fix positioning
+        const stationOffsets: Record<string, number> = {
+          top: 0,
+          about: 0.05,
+          skills: 0.08,
+          education: 0,
+          experience: 0,
+          work: 0,
+          contact: 0,
+        };
+
+        const offset = stationOffsets[def.id] || 0;
+        progress = THREE.MathUtils.clamp(progress + offset, 0, 1);
 
         const z = THREE.MathUtils.lerp(START_Z, END_Z, progress);
         return { ...def, progress, z };

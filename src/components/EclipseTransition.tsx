@@ -14,18 +14,20 @@ function SolarEclipseScene({ onDone }: { onDone: () => void }) {
 
     if (moonRef.current) {
       const progress = Math.min(t / 1.8, 1);
-      const ease = progress < 0.5
-        ? 4 * progress * progress * progress
-        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+      const ease =
+        progress < 0.5
+          ? 4 * progress * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
       moonRef.current.position.x = THREE.MathUtils.lerp(-2.5, 0, ease);
       moonRef.current.position.y = THREE.MathUtils.lerp(0.8, 0, ease);
     }
 
     if (coronaRef.current) {
       const progress = Math.min(t / 1.8, 1);
-      coronaRef.current.intensity = progress > 0.85
-        ? THREE.MathUtils.lerp(0, 3, (progress - 0.85) / 0.15)
-        : 0;
+      coronaRef.current.intensity =
+        progress > 0.85
+          ? THREE.MathUtils.lerp(0, 3, (progress - 0.85) / 0.15)
+          : 0;
     }
 
     if (t > 2.2 && !doneRef.current) {
@@ -60,7 +62,7 @@ function SolarEclipseScene({ onDone }: { onDone: () => void }) {
 
       {/* Moon blocking the sun */}
       <mesh ref={moonRef} position={[-2.5, 0.8, 0]}>
-        <sphereGeometry args={[0.58, 48, 48]} />
+        <sphereGeometry args={[0.45, 48, 48]} />
         <meshStandardMaterial color="#020617" />
       </mesh>
     </>
@@ -79,9 +81,10 @@ function LunarEclipseScene({ onDone }: { onDone: () => void }) {
 
     if (shadowRef.current) {
       const progress = Math.min(t / 1.8, 1);
-      const ease = progress < 0.5
-        ? 4 * progress * progress * progress
-        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+      const ease =
+        progress < 0.5
+          ? 4 * progress * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
       shadowRef.current.position.x = THREE.MathUtils.lerp(-2.5, 0, ease);
       shadowRef.current.position.y = THREE.MathUtils.lerp(0.6, 0, ease);
     }

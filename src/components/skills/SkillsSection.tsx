@@ -142,6 +142,27 @@ export function SkillsSection() {
         {/* Stats bar */}
         <Reveal delay={0.04}>
           <div className="mb-8 flex flex-wrap gap-4">
+            <button
+              type="button"
+              onClick={() => handleCategory(null)}
+              className={`group flex items-center gap-2.5 rounded-lg border px-4 py-2.5 transition-all duration-300 cursor-pointer ${
+                activeCategory === null
+                  ? "border-accent bg-accent/10 shadow-[0_0_20px_rgba(127,173,173,0.12)]"
+                  : "border-ink/8 bg-bg-elevated/60 hover:border-ink/15 hover:bg-bg-elevated"
+              }`}
+            >
+              <span className="size-2.5 rounded-full bg-ink/40" />
+              <span
+                className={`font-mono text-[11px] font-medium tracking-wide ${
+                  activeCategory === null ? "text-accent" : "text-ink-muted"
+                }`}
+              >
+                All
+              </span>
+              <span className="font-mono text-[10px] text-ink-soft">
+                {skills.length}
+              </span>
+            </button>
             {categoryStats.map((cat) => (
               <button
                 key={cat.id}
