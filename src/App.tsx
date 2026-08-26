@@ -42,6 +42,10 @@ const MiniGame = lazy(() =>
   })),
 );
 
+const BlackHoles = lazy(() =>
+  import("./components/BlackHoles").then((m) => ({ default: m.BlackHoles })),
+);
+
 function App() {
   const [showMiniGame, setShowMiniGame] = useState(false);
   const [ready, setReady] = useState(false);
@@ -114,6 +118,12 @@ function App() {
       <Suspense fallback={null}>
         <CustomCursor />
       </Suspense>
+
+      {!dark && (
+        <Suspense fallback={null}>
+          <BlackHoles />
+        </Suspense>
+      )}
 
       {eclipseTarget !== null && (
         <Suspense fallback={null}>

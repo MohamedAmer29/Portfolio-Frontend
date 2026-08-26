@@ -19,7 +19,13 @@ type NavbarProps = {
   onToggleTheme: () => void;
 };
 
-export function Navbar({ letter, resumeUrl, activeSection, dark, onToggleTheme }: NavbarProps) {
+export function Navbar({
+  letter,
+  resumeUrl,
+  activeSection,
+  dark,
+  onToggleTheme,
+}: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -46,7 +52,9 @@ export function Navbar({ letter, resumeUrl, activeSection, dark, onToggleTheme }
     <>
       <nav
         className={`fixed inset-x-0 top-0 z-[100] flex h-[70px] items-center justify-between px-[18px] backdrop-blur-md backdrop-saturate-200 transition duration-300 md:h-20 md:px-10 ${
-          scrolled ? "bg-bg/10 shadow-nav" : "bg-bg/10"
+          scrolled
+            ? "bg-bg/10 shadow-nav"
+            : "bg-bg/10"
         }`}
       >
         <Logo letter={letter} />
@@ -60,7 +68,11 @@ export function Navbar({ letter, resumeUrl, activeSection, dark, onToggleTheme }
                 href={link.href}
                 className={`font-mono text-nav tracking-wide transition ${isActive ? "text-accent" : "text-ink hover:text-accent"}`}
               >
-                <span className={`mr-1 ${isActive ? "text-accent" : "text-ink-soft"}`}>{link.num}</span>
+                <span
+                  className={`mr-1 ${isActive ? "text-accent" : "text-ink-soft"}`}
+                >
+                  {link.num}
+                </span>
                 {link.label}
               </a>
             );
@@ -137,7 +149,11 @@ export function Navbar({ letter, resumeUrl, activeSection, dark, onToggleTheme }
                 onClick={close}
                 className={`font-mono text-[15px] tracking-wide transition ${isActive ? "text-accent" : "text-ink hover:text-accent"}`}
               >
-                <span className={`mr-1 ${isActive ? "text-accent" : "text-ink-soft"}`}>{link.num}</span>
+                <span
+                  className={`mr-1 ${isActive ? "text-accent" : "text-ink-soft"}`}
+                >
+                  {link.num}
+                </span>
                 {link.label}
               </a>
             );

@@ -87,7 +87,6 @@ export function SkillsSection() {
 
   const handleSkillInteract = useCallback((name: string | null) => {
     setHoveredSkill(name);
-    if (name) setSelectedSkill(name);
   }, []);
 
   const handleSkillClick = useCallback((name: string) => {
