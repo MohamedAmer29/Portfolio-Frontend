@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Logo } from "./Logo";
 import { ThemeIcon } from "./ThemeIcon";
+import { useGSAP } from "../lib/gsap";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const gsap: any;
 
 const links = [
   { href: "#about", label: "ABOUT", num: "01." },
@@ -8,7 +12,8 @@ const links = [
   { href: "#education", label: "EDUCATION", num: "03." },
   { href: "#experience", label: "EXPERIENCE", num: "04." },
   { href: "#work", label: "WORK", num: "05." },
-  { href: "#contact", label: "CONTACT", num: "06." },
+  { href: "#services", label: "SERVICES", num: "06." },
+  { href: "#contact", label: "CONTACT", num: "07." },
 ];
 
 type NavbarProps = {
@@ -28,6 +33,26 @@ export function Navbar({
 }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
+
+  useGSAP(() => {
+    const el = navRef.current;
+    if (!el) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const items = el.querySelectorAll("[data-nav-item]");
+    if (reduced) {
+      gsap.set(items, { autoAlpha: 1, y: 0 });
+      return;
+    }
+    gsap.from(items, {
+      autoAlpha: 0,
+      y: -10,
+      duration: 0.5,
+      stagger: 0.05,
+      ease: "power3.out",
+      delay: 0.15,
+    });
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -51,6 +76,7 @@ export function Navbar({
   return (
     <>
       <nav
+        ref={navRef}
         className={`fixed inset-x-0 top-0 z-[100] flex h-[70px] items-center justify-between px-[18px] backdrop-blur-md backdrop-saturate-200 transition duration-300 md:h-20 md:px-10 ${
           scrolled
             ? "bg-bg/10 shadow-nav"
@@ -66,6 +92,7 @@ export function Navbar({
               <a
                 key={link.href}
                 href={link.href}
+                data-nav-item
                 className={`font-mono text-nav tracking-wide transition ${isActive ? "text-accent" : "text-ink hover:text-accent"}`}
               >
                 <span
@@ -81,6 +108,7 @@ export function Navbar({
             href={resumeUrl}
             target="_blank"
             rel="noreferrer"
+            data-nav-item
             className="ml-3 inline-flex items-center justify-center rounded border border-ink px-[1.1rem] py-[0.55rem] font-mono text-nav tracking-wide text-ink transition hover:border-accent hover:bg-accent/20"
           >
             Resume
@@ -88,6 +116,7 @@ export function Navbar({
           <button
             type="button"
             onClick={onToggleTheme}
+            data-nav-item
             className="ml-2 grid size-9 place-items-center rounded border border-ink/30 text-ink-muted transition-all duration-300 hover:border-accent hover:text-accent cursor-pointer overflow-hidden"
             aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
           >
@@ -137,7 +166,7 @@ export function Navbar({
         className={`fixed bottom-0 right-0 top-0 z-[99] grid w-[min(75vw,320px)] place-items-center bg-bg shadow-[-12px_0_40px_rgba(26,31,36,0.08)] transition duration-300 md:hidden ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
-        aria-hidden={!open}
+        {...(!open ? { "aria-hidden": "true" } : {})}
       >
         <nav className="flex flex-col items-center gap-6">
           {links.map((link) => {

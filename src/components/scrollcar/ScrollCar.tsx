@@ -1,14 +1,10 @@
 import { Canvas } from "@react-three/fiber";
-import {
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { useThemeColor } from "../../hooks/useThemeColor";
 import { Scene } from "./Scene";
 
-const ROAD_LENGTH = 14;
+const ROAD_LENGTH = 16.2;
 const START_Z = ROAD_LENGTH / 2 - 1.2;
 const END_Z = -ROAD_LENGTH / 2 + 1.2;
 
@@ -21,13 +17,6 @@ interface StationConfig {
 }
 
 const STATION_DEFINITIONS: StationConfig[] = [
-  {
-    id: "top",
-    name: "Top",
-    color: "#64748b",
-    activeColor: "#38bdf8",
-    emissive: "#0284c7",
-  },
   {
     id: "about",
     name: "About",
@@ -64,6 +53,13 @@ const STATION_DEFINITIONS: StationConfig[] = [
     emissive: "#7e22ce",
   },
   {
+    id: "services",
+    name: "Services",
+    color: "#64748b",
+    activeColor: "#67c3c3",
+    emissive: "#456e6e",
+  },
+  {
     id: "contact",
     name: "Contact",
     color: "#64748b",
@@ -75,13 +71,30 @@ const STATION_DEFINITIONS: StationConfig[] = [
 export function ScrollCar({ shouldAnimate }: { shouldAnimate: boolean }) {
   const progressRef = useRef(0);
   const panelRef = useRef<HTMLDivElement>(null);
+  const carHonkAudioRef = useRef<HTMLAudioElement | null>(null);
+  const carCrashAudioRef = useRef<HTMLAudioElement | null>(null);
+  const previousActiveRef = useRef<string | null>(null);
+  const arrivalCountRef = useRef(0);
   const [mouseNav, setMouseNav] = useState(false);
-  const [activeStationId, setActiveStationId] = useState<string>("top");
+  const [activeStationId, setActiveStationId] = useState<string>(
+    STATION_DEFINITIONS[0]?.id ?? "about",
+  );
   const [stationsWithPos, setStationsWithPos] = useState<
     (StationConfig & { progress: number; z: number })[]
   >([]);
   const bgColor = useThemeColor("--color-bg");
   const groundColor = useThemeColor("--color-bg-elevated");
+
+  const playSound = (
+    ref: React.MutableRefObject<HTMLAudioElement | null>,
+    src: string,
+  ) => {
+    if (!ref.current) {
+      ref.current = new Audio(src);
+    }
+    ref.current.currentTime = 0;
+    ref.current.play().catch(() => {});
+  };
 
   const scrollToSection = (id: string) => {
     const targetElement = document.getElementById(id);
@@ -103,25 +116,25 @@ export function ScrollCar({ shouldAnimate }: { shouldAnimate: boolean }) {
         if (el && maxScroll > 0) {
           const rect = el.getBoundingClientRect();
           const elementTop = rect.top + currentY;
-          progress = THREE.MathUtils.clamp(elementTop / maxScroll, 0, 1);
-        } else if (def.id === "contact") {
-          progress = 1;
-        } else {
-          progress = 0;
+          // Anchor the station to the section's center so the car sits at the
+          // stop while that section is in view, not only when its top hits the
+          // top of the viewport.
+          const elementCenter = elementTop + el.offsetHeight / 2;
+          progress = THREE.MathUtils.clamp(
+            (elementCenter - window.innerHeight / 2) / maxScroll,
+            0,
+            1,
+          );
         }
 
-        const stationOffsets: Record<string, number> = {
-          top: 0,
-          about: 0.05,
-          skills: 0.08,
-          education: 0,
-          experience: 0,
-          work: 0,
-          contact: 0,
-        };
-
-        const offset = stationOffsets[def.id] || 0;
-        progress = THREE.MathUtils.clamp(progress + offset, 0, 1);
+        if (def.id === "contact") {
+          // Contact is the final destination — pin it to the end of the road
+          // so the car arrives exactly at the last station instead of
+          // overshooting it into the footer.
+          progress = 1;
+        } else if (!el) {
+          progress = 0;
+        }
 
         const z = THREE.MathUtils.lerp(START_Z, END_Z, progress);
         return { ...def, progress, z };
@@ -132,7 +145,7 @@ export function ScrollCar({ shouldAnimate }: { shouldAnimate: boolean }) {
       const carProgress = maxScroll > 0 ? currentY / maxScroll : 0;
       progressRef.current = carProgress;
 
-      let closestId = "top";
+      let closestId = STATION_DEFINITIONS[0]?.id ?? "";
       let minDistance = Infinity;
 
       for (const st of updated) {
@@ -143,6 +156,18 @@ export function ScrollCar({ shouldAnimate }: { shouldAnimate: boolean }) {
         }
       }
       setActiveStationId(closestId);
+
+      const previousActive = previousActiveRef.current;
+      previousActiveRef.current = closestId;
+      if (closestId === "contact" && previousActive !== "contact") {
+        if (arrivalCountRef.current < 2) {
+          arrivalCountRef.current += 1;
+          playSound(carHonkAudioRef, "/sounds/car-honk.mp3");
+        } else if (arrivalCountRef.current === 2) {
+          arrivalCountRef.current += 1;
+          playSound(carCrashAudioRef, "/sounds/car_crash.mp3");
+        }
+      }
     };
 
     updatePositions();
@@ -151,6 +176,14 @@ export function ScrollCar({ shouldAnimate }: { shouldAnimate: boolean }) {
     return () => {
       window.removeEventListener("scroll", updatePositions);
       window.removeEventListener("resize", updatePositions);
+      if (carHonkAudioRef.current) {
+        carHonkAudioRef.current.pause();
+        carHonkAudioRef.current = null;
+      }
+      if (carCrashAudioRef.current) {
+        carCrashAudioRef.current.pause();
+        carCrashAudioRef.current = null;
+      }
     };
   }, []);
 

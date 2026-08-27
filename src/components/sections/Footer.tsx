@@ -4,6 +4,8 @@ type FooterProps = {
   linkedin: string;
 };
 
+import { Reveal } from "../Reveal";
+
 function IconGitHub() {
   return (
     <svg
@@ -39,7 +41,8 @@ function IconLinkedIn() {
 export function Footer({ name, github, linkedin }: FooterProps) {
   return (
     <footer className="border-t border-ink/8 px-6 pb-14 pt-10 text-center font-mono text-[12px] text-ink-soft">
-      <div className="mx-auto w-full max-w-[1000px] md:w-[min(100%-10rem,1000px)]">
+      <Reveal>
+        <div className="mx-auto w-full max-w-[1000px] md:w-[min(100%-10rem,1000px)]">
         <p>
           Built by{" "}
           <a
@@ -72,7 +75,8 @@ export function Footer({ name, github, linkedin }: FooterProps) {
             <IconLinkedIn />
           </a>
         </div>
-      </div>
+        </div>
+      </Reveal>
     </footer>
   );
 }

@@ -5,7 +5,12 @@ declare const gsap: any
 
 import { Reveal } from "../Reveal";
 import { SectionHeading } from "../SectionHeading";
-import { education, academicFocus, type Education } from "./educationData";
+import { useEducation } from "../../hooks/useEducation";
+import {
+  education as fallbackEducation,
+  academicFocus as fallbackAcademicFocus,
+  type Education,
+} from "./educationData";
 
 function GraduationIcon({ className }: { className?: string }) {
   return (
@@ -147,7 +152,7 @@ function TimelineCard({ item, isLast }: { item: Education; isLast: boolean }) {
               {item.coursework.map((course) => (
                 <span
                   key={course}
-                  className="rounded-md border border-ink/8 bg-ink/3 px-2.5 py-1 font-mono text-[11px] text-ink-soft transition-all duration-300 hover:border-accent/20 hover:bg-accent/5 hover:text-accent"
+                  className="rounded-md border border-ink/20 bg-ink/5 px-2.5 py-1 font-mono text-[11px] text-ink font-medium transition-all duration-300 hover:border-accent/40 hover:bg-accent/15 hover:text-accent"
                 >
                   {course}
                 </span>
@@ -183,7 +188,12 @@ export function EducationSection() {
   const timelineRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
 
-  const entries = useMemo(() => education, []);
+  const { data: educationData } = useEducation();
+  const entries = useMemo(
+    () => educationData?.entries ?? fallbackEducation,
+    [educationData],
+  );
+  const academicFocus = educationData?.academicFocus ?? fallbackAcademicFocus;
 
   useGSAP(
     () => {

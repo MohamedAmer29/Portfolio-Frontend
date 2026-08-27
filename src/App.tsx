@@ -18,7 +18,9 @@ import { Hero } from "./components/sections/Hero";
 import { Projects } from "./components/sections/Projects";
 import { EducationSection } from "./components/education/EducationSection";
 import { SkillsSection } from "./components/skills/SkillsSection";
+import { ServicesSection } from "./components/services/ServicesSection";
 import { portfolio } from "./data/portfolio";
+import heroImg from "./assets/hero.png";
 
 const CustomCursor = lazy(() =>
   import("./components/CustomCursor").then((m) => ({ default: m.CustomCursor })),
@@ -51,18 +53,26 @@ function App() {
   const [ready, setReady] = useState(false);
   const [showLoader, setShowLoader] = useState(true);
   const [postGameLoading, setPostGameLoading] = useState(false);
+  const [pendingMiniGame, setPendingMiniGame] = useState(
+    () => !localStorage.getItem("hasSeenMiniGame"),
+  );
   const [carShouldAnimate, setCarShouldAnimate] = useState(false);
   const [eclipseTarget, setEclipseTarget] = useState<boolean | null>(null);
-  const activeSection = useActiveSection(["about", "skills", "education", "experience", "work", "contact"]);
+  const activeSection = useActiveSection(["about", "skills", "education", "experience", "work", "services", "contact"]);
   const [dark, setDark] = useDarkMode();
 
   useEffect(() => {
-    const hasSeenMiniGame = localStorage.getItem("hasSeenMiniGame");
-    if (!hasSeenMiniGame) {
-      setShowMiniGame(true);
-      setShowLoader(false);
+    if (pendingMiniGame) {
+      const chunk = import("./components/minigame/index");
+      chunk
+        .then(() => setShowMiniGame(true))
+        .catch(() => {
+          setPendingMiniGame(false);
+          setShowLoader(false);
+          setReady(true);
+        });
     }
-  }, []);
+  }, [pendingMiniGame]);
 
   const onMiniGameComplete = useCallback(() => {
     localStorage.setItem("hasSeenMiniGame", "true");
@@ -78,12 +88,17 @@ function App() {
   }, []);
 
   const onLoaderComplete = useCallback(() => {
+    if (pendingMiniGame) {
+      setPendingMiniGame(false);
+      setShowLoader(false);
+      return;
+    }
     setReady(true);
     setShowLoader(false);
     setTimeout(() => {
       setCarShouldAnimate(true);
     }, 350);
-  }, []);
+  }, [pendingMiniGame]);
 
   const requestToggleTheme = useCallback(() => {
     setEclipseTarget(!dark);
@@ -133,6 +148,7 @@ function App() {
 
       <div
         aria-hidden={!ready}
+        className={ready ? "" : "hidden"}
       >
         <Navbar letter={portfolio.logoLetter} resumeUrl={portfolio.resumeUrl} activeSection={activeSection} dark={dark} onToggleTheme={requestToggleTheme} />
         <Sidebars
@@ -158,11 +174,13 @@ function App() {
             paragraphs={portfolio.about.paragraphs}
             tech={portfolio.about.tech}
             letter={portfolio.logoLetter}
+            image={heroImg}
           />
           <SkillsSection />
           <EducationSection />
           <Experience jobs={portfolio.experience} />
           <Projects projects={portfolio.projects} />
+          <ServicesSection />
           <Contact
             eyebrow={portfolio.contact.eyebrow}
             title={portfolio.contact.title}

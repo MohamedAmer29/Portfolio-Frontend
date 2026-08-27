@@ -1,8 +1,13 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Reveal } from '../Reveal'
 import { SectionHeading } from '../SectionHeading'
+import { useExperience } from '../../hooks/useExperience'
+import { useGSAP } from '../../lib/gsap'
 
-type Job = {
+declare const gsap: any
+
+export type Job = {
+  id?: string
   company: string
   title: string
   range: string
@@ -15,8 +20,45 @@ type ExperienceProps = {
 }
 
 export function Experience({ jobs }: ExperienceProps) {
+  const { data: experienceData } = useExperience()
+  const allJobs = experienceData ?? jobs
   const [active, setActive] = useState(0)
-  const job = jobs[active]
+  const job = allJobs[active]
+  const panelRef = useRef<HTMLDivElement>(null)
+  const tabsRef = useRef<HTMLDivElement>(null)
+
+  useGSAP(() => {
+    const el = tabsRef.current
+    if (!el) return
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const tabs = el.querySelectorAll('[role="tab"]')
+    if (reduced) {
+      gsap.set(tabs, { autoAlpha: 1, y: 0 })
+      return
+    }
+    gsap.from(tabs, {
+      autoAlpha: 0,
+      y: 12,
+      duration: 0.45,
+      stagger: 0.06,
+      ease: 'power2.out',
+    })
+  }, [])
+
+  useGSAP(() => {
+    if (!panelRef.current) return
+    gsap.fromTo(
+      panelRef.current.children,
+      { autoAlpha: 0, y: 15 },
+      {
+        autoAlpha: 1,
+        y: 0,
+        duration: 0.4,
+        stagger: 0.06,
+        ease: 'power2.out',
+      },
+    )
+  }, [active])
 
   return (
     <section className="scroll-mt-20 px-5 py-[72px] md:px-0 md:py-[100px]" id="experience">
@@ -28,13 +70,14 @@ export function Experience({ jobs }: ExperienceProps) {
         <Reveal delay={0.1}>
           <div className="grid gap-6 md:grid-cols-[200px_1fr] md:gap-8">
             <div
+              ref={tabsRef}
               className="flex overflow-x-auto border-b border-ink-muted/30 [-ms-overflow-style:none] [scrollbar-width:none] md:flex-col md:overflow-visible md:border-b-0 md:border-l-2 md:border-ink-muted/15"
               role="tablist"
               aria-label="Companies"
             >
-              {jobs.map((item, index) => (
+              {allJobs.map((item, index) => (
                 <button
-                  key={item.company}
+                  key={item.id ?? `${item.company}-${index}`}
                   type="button"
                   role="tab"
                   aria-selected={index === active}
@@ -50,17 +93,21 @@ export function Experience({ jobs }: ExperienceProps) {
               ))}
             </div>
 
-            <div role="tabpanel" className="min-h-[280px]">
+            <div ref={panelRef} role="tabpanel" className="min-h-[280px]">
               <h3 className="mb-2 font-sans text-[1.25rem] font-bold text-ink">
                 {job.title}{' '}
-                <a
-                  href={job.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-accent transition-colors duration-200 hover:underline decoration-accent/40 underline-offset-4"
-                >
-                  @ {job.company}
-                </a>
+                {job.url ? (
+                  <a
+                    href={job.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-accent transition-colors duration-200 hover:underline decoration-accent/40 underline-offset-4"
+                  >
+                    @ {job.company}
+                  </a>
+                ) : (
+                  <span className="text-accent">@ {job.company}</span>
+                )}
               </h3>
               <p className="mb-6 font-mono text-[13px] text-ink-soft">{job.range}</p>
               <ul className="space-y-4">
@@ -80,3 +127,4 @@ export function Experience({ jobs }: ExperienceProps) {
     </section>
   )
 }
+

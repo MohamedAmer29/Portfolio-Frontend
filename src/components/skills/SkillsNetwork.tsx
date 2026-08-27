@@ -137,7 +137,7 @@ export function SkillsNetwork({
           const nodeSize = Math.max(64, skill.level * 0.72);
           return (
             <div
-              key={skill.name}
+              key={skill.id}
               data-skill-node
               className="absolute"
               style={{

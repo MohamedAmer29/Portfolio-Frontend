@@ -6,6 +6,7 @@ export type SkillCategory =
   | "ai";
 
 export interface Skill {
+  id: string;
   name: string;
   category: SkillCategory;
   description: string;
@@ -21,7 +22,7 @@ export const CATEGORIES: { id: SkillCategory; label: string }[] = [
   { id: "ai", label: "AI & Vision" },
 ];
 
-export const skills: Skill[] = [
+const skillsList: Omit<Skill, "id">[] = [
   {
     name: "React",
     category: "frontend",
@@ -249,6 +250,11 @@ export const skills: Skill[] = [
     level: 70,
   },
 ];
+
+export const skills: Skill[] = skillsList.map((s) => ({
+  ...s,
+  id: `skill-${s.name}`,
+}));
 
 export const CATEGORY_COLORS: Record<SkillCategory, string> = {
   frontend: "#7fadad",

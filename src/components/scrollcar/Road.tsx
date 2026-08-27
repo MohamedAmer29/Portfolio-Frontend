@@ -38,6 +38,15 @@ export function Road({
     return items;
   }, []);
 
+  const lamps = useMemo(() => {
+    const items: { z: number; x: number; key: string }[] = [];
+    for (let z = -ROAD_LENGTH / 2 + 1.5; z < ROAD_LENGTH / 2 - 0.5; z += 1.9) {
+      items.push({ z, x: -0.82, key: `lamp-l-${z}` });
+      items.push({ z, x: 0.82, key: `lamp-r-${z}` });
+    }
+    return items;
+  }, []);
+
   return (
     <group>
       {/* Asphalt */}
@@ -74,6 +83,28 @@ export function Road({
         >
           <planeGeometry args={[0.06, 0.38]} />
         </mesh>
+      ))}
+
+      {/* Roadside lights */}
+      {lamps.map((lamp) => (
+        <group key={lamp.key} position={[lamp.x, 0, lamp.z]}>
+          <mesh position={[0, 0.25, 0]}>
+            <cylinderGeometry args={[0.016, 0.022, 0.5, 8]} />
+            <meshStandardMaterial color="#3a4850" roughness={0.6} />
+          </mesh>
+          <mesh position={[0, 0.5, 0]}>
+            <boxGeometry args={[0.06, 0.03, 0.06]} />
+            <meshStandardMaterial color="#4f6166" roughness={0.5} />
+          </mesh>
+          <mesh position={[0, 0.56, 0]}>
+            <sphereGeometry args={[0.035, 10, 10]} />
+            <meshStandardMaterial
+              color="#ffe9b0"
+              emissive="#ffcf7d"
+              emissiveIntensity={1.1}
+            />
+          </mesh>
+        </group>
       ))}
 
       {/* Stop Stations */}

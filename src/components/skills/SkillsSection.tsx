@@ -2,8 +2,9 @@ import { useRef, useState, useMemo, useCallback } from "react";
 
 import { Reveal } from "../Reveal";
 import { SectionHeading } from "../SectionHeading";
+import { useSkills } from "../../hooks/useSkills";
 import {
-  skills,
+  skills as fallbackSkills,
   CATEGORIES,
   CATEGORY_COLORS,
   type SkillCategory,
@@ -28,7 +29,7 @@ function getConnections(skillList: { name: string; related: string[] }[]) {
   const conns: { from: number; to: number }[] = [];
   const nameIndex = new Map(skillList.map((s, i) => [s.name, i]));
   skillList.forEach((s, i) => {
-    s.related.forEach((r) => {
+    (s.related ?? []).forEach((r) => {
       const j = nameIndex.get(r);
       if (j !== undefined && j > i) {
         conns.push({ from: i, to: j });
@@ -39,6 +40,8 @@ function getConnections(skillList: { name: string; related: string[] }[]) {
 }
 
 export function SkillsSection() {
+  const { data: skillsData } = useSkills();
+  const skills = skillsData ?? fallbackSkills;
   const [activeCategory, setActiveCategory] = useState<SkillCategory | null>(
     null,
   );
@@ -188,7 +191,7 @@ export function SkillsSection() {
           </div>
         </Reveal>
 
-        <SkillsMobileList activeCategory={activeCategory} />
+        <SkillsMobileList activeCategory={activeCategory} skills={skills} />
       </div>
     </section>
   );

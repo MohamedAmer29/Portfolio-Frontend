@@ -107,30 +107,30 @@ function LunarEclipseScene({ onDone }: { onDone: () => void }) {
       {/* Moon */}
       <group ref={moonGroup}>
         <mesh>
-          <sphereGeometry args={[0.6, 48, 48]} />
+          <sphereGeometry args={[0.35, 48, 48]} />
           <meshStandardMaterial
             color="#cbd5e1"
             emissive="#94a3b8"
             emissiveIntensity={0.3}
           />
         </mesh>
-        <mesh position={[-0.2, 0.15, 0.5]}>
-          <sphereGeometry args={[0.1, 16, 16]} />
-          <meshStandardMaterial color="#94a3b8" roughness={1} />
-        </mesh>
-        <mesh position={[0.18, -0.12, 0.52]}>
-          <sphereGeometry args={[0.08, 16, 16]} />
-          <meshStandardMaterial color="#94a3b8" roughness={1} />
-        </mesh>
-        <mesh position={[-0.08, -0.22, 0.54]}>
+        <mesh position={[-0.12, 0.09, 0.3]}>
           <sphereGeometry args={[0.06, 16, 16]} />
+          <meshStandardMaterial color="#94a3b8" roughness={1} />
+        </mesh>
+        <mesh position={[0.11, -0.07, 0.31]}>
+          <sphereGeometry args={[0.05, 16, 16]} />
+          <meshStandardMaterial color="#94a3b8" roughness={1} />
+        </mesh>
+        <mesh position={[-0.05, -0.13, 0.32]}>
+          <sphereGeometry args={[0.04, 16, 16]} />
           <meshStandardMaterial color="#94a3b8" roughness={1} />
         </mesh>
       </group>
 
       {/* Earth's shadow */}
       <mesh ref={shadowRef} position={[-2.5, 0.6, 0.3]}>
-        <sphereGeometry args={[0.55, 48, 48]} />
+        <sphereGeometry args={[0.32, 48, 48]} />
         <meshStandardMaterial
           color="#1e293b"
           emissive="#7f1d1d"

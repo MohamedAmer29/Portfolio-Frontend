@@ -19,6 +19,7 @@ export const portfolio = {
       "Today I work across the stack: crafting clean interfaces, designing APIs, and shipping features that feel fast and intentional. I care about accessibility, maintainability, and details that make an experience feel finished.",
       "Here are a few technologies I've been working with recently:",
     ],
+    image: '/src/assets/hero.png',
     tech: [
       'React',
       'TypeScript',

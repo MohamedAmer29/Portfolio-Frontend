@@ -122,7 +122,7 @@ export function PageLoader({ letter, onComplete }: PageLoaderProps) {
   return (
     <div
       ref={rootRef}
-      className="fixed inset-0 z-[10000] flex h-dvh w-screen max-w-[100vw] items-center justify-center overflow-hidden bg-bg"
+      className="fixed inset-0 z-[10002] flex h-dvh w-screen max-w-[100vw] items-center justify-center overflow-hidden bg-bg"
       aria-hidden="true"
       aria-busy="true"
       role="status"

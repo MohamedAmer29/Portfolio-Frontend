@@ -56,7 +56,7 @@ export function SkillsInfoPanel({
               Related
             </div>
             <div className="flex flex-wrap gap-1.5">
-              {focusedSkill.related.map((r) => (
+              {[...new Set(focusedSkill.related)].map((r) => (
                 <span
                   key={r}
                   className="rounded-md border border-ink/8 bg-ink/3 px-2 py-0.5 font-mono text-[10px] text-ink-soft"

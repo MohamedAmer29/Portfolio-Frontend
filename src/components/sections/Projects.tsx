@@ -1,13 +1,25 @@
+import { motion } from 'framer-motion'
 import { Reveal } from '../Reveal'
 import { SectionHeading } from '../SectionHeading'
+import { useProjects } from '../../hooks/useProjects'
 
-type Project = {
+export type Project = {
   title: string
+  slug?: string
+  shortDescription?: string
   description: string
+  image: string | null
+  githubUrl?: string | null
+  liveUrl?: string | null
+  featured?: boolean
+  status?: string | null
+  displayOrder?: number
+  startDate?: string | null
+  endDate?: string | null
+  technologies?: readonly { name: string; category?: string; icon?: string | null }[]
   tech: readonly string[]
   github: string
   external: string
-  image: string
 }
 
 type ProjectsProps = {
@@ -33,6 +45,9 @@ function IconExternal() {
 }
 
 export function Projects({ projects }: ProjectsProps) {
+  const { data: projectsData } = useProjects()
+  const allProjects = projectsData ?? projects
+
   return (
     <section className="scroll-mt-20 px-5 py-[72px] md:px-0 md:py-[100px]" id="work">
       <div className="mx-auto w-full max-w-[1000px] md:w-[min(100%-10rem,1000px)]">
@@ -41,38 +56,75 @@ export function Projects({ projects }: ProjectsProps) {
         </Reveal>
 
         <div className="flex flex-col gap-6 md:gap-24">
-          {projects.map((project, index) => {
+          {allProjects.map((project, index) => {
             const reversed = index % 2 === 1
+            const imgSrc =
+              project.image && project.image.startsWith('http')
+                ? project.image
+                : null
+            const imageLabel = project.image ?? project.status ?? ''
+            const techItems =
+              project.technologies && project.technologies.length > 0
+                ? project.technologies.map((t) => t.name)
+                : project.tech
+            const orderLabel = String(project.displayOrder ?? index + 1).padStart(
+              2,
+              '0',
+            )
+            const dateRange =
+              project.startDate || project.endDate
+                ? `${project.startDate ?? ''}${project.startDate && project.endDate ? ' — ' : ''}${project.endDate ?? ''}`
+                : null
 
             return (
               <Reveal key={project.title} delay={0.05 * index}>
                 {/* Mobile card */}
-                <article className="relative grid min-h-[400px] overflow-hidden bg-project rounded-sm md:hidden">
+                <article className="relative grid min-h-[360px] overflow-hidden bg-project rounded-lg md:hidden">
                   <div className="absolute inset-0">
-                    <div className="grid size-full place-items-center bg-[radial-gradient(circle_at_20%_20%,rgba(127,173,173,0.35),transparent_45%),radial-gradient(circle_at_80%_70%,rgba(90,120,140,0.4),transparent_40%),linear-gradient(145deg,#243038,#13181d)] font-mono text-[13px] uppercase tracking-[0.08em] text-white/35">
-                      {project.image}
-                    </div>
+                    {imgSrc ? (
+                      <motion.img
+                        src={imgSrc}
+                        alt={project.title}
+                        className="size-full object-cover"
+                        initial={{ opacity: 0, scale: 1.05 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                      />
+                    ) : (
+                      <div className="grid size-full place-items-center bg-[radial-gradient(circle_at_20%_20%,rgba(127,173,173,0.35),transparent_45%),radial-gradient(circle_at_80%_70%,rgba(90,120,140,0.4),transparent_40%),linear-gradient(145deg,#243038,#13181d)] font-mono text-[13px] uppercase tracking-[0.08em] text-white/35">
+                        {imageLabel}
+                      </div>
+                    )}
                   </div>
-                  <div className="relative z-[2] flex min-h-[400px] flex-col justify-end gap-4 bg-linear-to-b from-black/40 via-black/80 to-[#101418]/95 p-6">
-                    <p className="font-mono text-label text-accent">Featured Project</p>
-                    <h3 className="font-sans text-[clamp(1.25rem,2.5vw,1.65rem)] font-bold text-bg-elevated">
+                  <div className="relative z-[2] flex min-h-[360px] flex-col justify-end gap-3 bg-gradient-to-t from-[#0e1216] via-[#0e1216]/90 to-transparent p-5">
+                    <p className="font-mono text-[11px] text-accent">
+                      {orderLabel} ·{' '}
+                      {project.featured ? 'Featured Project' : project.status || 'Project'}
+                    </p>
+                    <h3 className="font-sans text-[1.35rem] font-bold leading-tight text-white">
                       {project.title}
                     </h3>
-                    <p className="rounded-sm bg-ink/60 p-4 text-[0.92rem] leading-[1.65] text-bg-elevated/80 backdrop-blur-sm">
+                    {project.slug && (
+                      <p className="font-mono text-[11px] text-accent/80">
+                        {project.slug}
+                      </p>
+                    )}
+                    <p className="rounded-md bg-[#161d24]/90 p-3.5 text-[0.88rem] leading-[1.6] text-white/90 backdrop-blur-md">
                       {project.description}
                     </p>
-                    <ul className="flex flex-wrap gap-x-4 gap-y-2 font-mono text-[12px] text-ink-soft">
-                      {project.tech.map((item) => (
+                    <ul className="flex flex-wrap gap-x-3 gap-y-1.5 font-mono text-[11px] text-white/70">
+                      {techItems.map((item) => (
                         <li key={item}>{item}</li>
                       ))}
                     </ul>
-                    <div className="flex gap-4">
+                    <div className="mt-1 flex gap-4">
                       <a
                         href={project.github}
                         target="_blank"
                         rel="noreferrer"
                         aria-label="GitHub"
-                        className="grid size-[22px] place-items-center text-bg-elevated transition-colors duration-200 hover:text-accent"
+                        className="grid size-7 place-items-center rounded bg-white/10 text-white transition-colors duration-200 hover:bg-accent/20 hover:text-accent"
                       >
                         <IconGitHub />
                       </a>
@@ -81,7 +133,7 @@ export function Projects({ projects }: ProjectsProps) {
                         target="_blank"
                         rel="noreferrer"
                         aria-label="Live site"
-                        className="grid size-[22px] place-items-center text-bg-elevated transition-colors duration-200 hover:text-accent"
+                        className="grid size-7 place-items-center rounded bg-white/10 text-white transition-colors duration-200 hover:bg-accent/20 hover:text-accent"
                       >
                         <IconExternal />
                       </a>
@@ -98,9 +150,19 @@ export function Projects({ projects }: ProjectsProps) {
                     }`}
                   >
                     <div className="relative size-full transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:shadow-[0_20px_50px_-20px_rgba(26,31,36,0.4)]">
-                      <div className="grid size-full place-items-center bg-[radial-gradient(circle_at_20%_20%,rgba(127,173,173,0.35),transparent_45%),radial-gradient(circle_at_80%_70%,rgba(90,120,140,0.4),transparent_40%),linear-gradient(145deg,#243038,#13181d)] font-mono text-[13px] uppercase tracking-[0.08em] text-white/40 transition-all duration-500 group-hover:text-white/55">
-                        {project.image}
-                      </div>
+                      {imgSrc ? (
+                        <motion.img
+                          src={imgSrc}
+                          alt={project.title}
+                          className="size-full object-cover"
+                          whileHover={{ scale: 1.06 }}
+                          transition={{ duration: 0.4 }}
+                        />
+                      ) : (
+                        <div className="grid size-full place-items-center bg-[radial-gradient(circle_at_20%_20%,rgba(127,173,173,0.35),transparent_45%),radial-gradient(circle_at_80%_70%,rgba(90,120,140,0.4),transparent_40%),linear-gradient(145deg,#243038,#13181d)] font-mono text-[13px] uppercase tracking-[0.08em] text-white/40 transition-all duration-500 group-hover:text-white/55">
+                          {imageLabel}
+                        </div>
+                      )}
 
                       {/* Teal tint — fades on hover to reveal image clearly */}
                       <div
@@ -122,13 +184,28 @@ export function Projects({ projects }: ProjectsProps) {
                         : 'col-start-7 items-end text-right'
                     }`}
                   >
-                    <p className="font-mono text-[13px] tracking-wide text-accent">Featured Project</p>
+                    <p className="font-mono text-[13px] tracking-wide text-accent">
+                      {orderLabel} ·{' '}
+                      {project.featured ? 'Featured Project' : project.status || 'Project'}
+                    </p>
 
                     <h3 className="font-sans text-[clamp(1.35rem,2.4vw,1.75rem)] font-bold text-ink transition-colors duration-300 group-hover:text-accent">
                       <a href={project.external} target="_blank" rel="noreferrer">
                         {project.title}
                       </a>
                     </h3>
+
+                    {project.slug && (
+                      <p className="font-mono text-[11px] text-accent/70">
+                        {project.slug}
+                      </p>
+                    )}
+                    {project.shortDescription &&
+                      project.shortDescription !== project.description && (
+                        <p className="font-mono text-[11px] uppercase tracking-widest text-ink-soft">
+                          {project.shortDescription}
+                        </p>
+                      )}
 
                     {/* Overlapping teal description — lifts slightly on hover */}
                     <p
@@ -144,12 +221,23 @@ export function Projects({ projects }: ProjectsProps) {
                         reversed ? 'justify-start' : 'justify-end'
                       }`}
                     >
-                      {project.tech.map((item) => (
+                      {techItems.map((item) => (
                         <li key={item} className="transition-colors duration-300 group-hover:text-ink">
                           {item}
                         </li>
                       ))}
                     </ul>
+
+                    <div
+                      className={`flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[12px] text-ink-muted ${
+                        reversed ? 'justify-start' : 'justify-end'
+                      }`}
+                    >
+                      {project.status && !project.featured && (
+                        <span className="text-accent/80">{project.status}</span>
+                      )}
+                      {dateRange && <span>{dateRange}</span>}
+                    </div>
 
                     <div className="flex gap-4">
                       <a

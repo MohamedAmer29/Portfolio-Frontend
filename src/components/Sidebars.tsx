@@ -1,3 +1,9 @@
+import { useRef } from "react";
+import { useGSAP } from "../lib/gsap";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const gsap: any;
+
 type SidebarsProps = {
   email: string;
   github: string;
@@ -5,15 +11,37 @@ type SidebarsProps = {
 };
 
 export function Sidebars({ email, github, linkedin }: SidebarsProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    const el = ref.current;
+    if (!el) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const items = el.querySelectorAll("[data-sidebar-item]");
+    if (reduced) {
+      gsap.set(items, { autoAlpha: 1, y: 0 });
+      return;
+    }
+    gsap.from(items, {
+      autoAlpha: 0,
+      y: 14,
+      duration: 0.6,
+      stagger: 0.08,
+      ease: "power3.out",
+      delay: 0.2,
+    });
+  }, []);
+
   return (
-    <>
+    <div ref={ref} className="contents">
       <aside
         className="fixed bottom-0 left-[110px] z-50 hidden w-10 text-ink-muted xl:block"
         aria-label="Social links"
       >
         <div className="flex flex-col items-center gap-4 after:mt-4 after:h-[90px] after:w-px after:bg-ink-muted/55 after:content-['']">
           <a
-            className="grid size-[22px] place-items-center transition hover:-translate-y-0.5 hover:text-accent"
+            data-sidebar-item
+            className="grid size-[22px] place-items-center transition hover:-translate-y-1 hover:scale-110 hover:text-accent"
             href={github}
             target="_blank"
             rel="noreferrer"
@@ -30,7 +58,8 @@ export function Sidebars({ email, github, linkedin }: SidebarsProps) {
             </svg>
           </a>
           <a
-            className="grid size-[22px] place-items-center transition hover:-translate-y-0.5 hover:text-accent"
+            data-sidebar-item
+            className="grid size-[22px] place-items-center transition hover:-translate-y-1 hover:scale-110 hover:text-accent"
             href={linkedin}
             target="_blank"
             rel="noreferrer"
@@ -57,13 +86,14 @@ export function Sidebars({ email, github, linkedin }: SidebarsProps) {
       >
         <div className="flex flex-col items-center gap-4 after:mt-4 after:h-[90px] after:w-px after:bg-ink-muted/55 after:content-['']">
           <a
-            className="writing-vertical font-mono text-[12px] tracking-[0.12em] transition hover:-translate-y-0.5 hover:text-accent"
+            data-sidebar-item
+            className="writing-vertical font-mono text-[12px] tracking-[0.12em] transition hover:-translate-y-1 hover:scale-110 hover:text-accent"
             href={`mailto:${email}`}
           >
             {email}
           </a>
         </div>
       </aside>
-    </>
+    </div>
   );
 }

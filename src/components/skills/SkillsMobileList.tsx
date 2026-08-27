@@ -1,11 +1,13 @@
 import { Reveal } from "../Reveal";
-import { CATEGORIES, CATEGORY_COLORS, skills } from "./skillsData";
-import type { SkillCategory } from "./skillsData";
+import { CATEGORIES, CATEGORY_COLORS } from "./skillsData";
+import type { Skill, SkillCategory } from "./skillsData";
 
 export function SkillsMobileList({
   activeCategory,
+  skills,
 }: {
   activeCategory: SkillCategory | null;
+  skills: Skill[];
 }) {
   return (
     <div className="space-y-8 md:hidden">
@@ -27,7 +29,7 @@ export function SkillsMobileList({
               <div className="space-y-2">
                 {catSkills.map((skill) => (
                   <div
-                    key={skill.name}
+                    key={skill.id}
                     className="group flex items-center gap-3 rounded-lg border border-ink/6 bg-bg-elevated/50 px-4 py-3 transition-all duration-300 hover:border-accent/25 hover:bg-accent/5"
                   >
                     <div className="relative flex-1">
