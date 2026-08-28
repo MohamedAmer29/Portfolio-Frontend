@@ -1,10 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { motion, type Variants } from "framer-motion";
 import { Logo } from "./Logo";
 import { ThemeIcon } from "./ThemeIcon";
-import { useGSAP } from "../lib/gsap";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-declare const gsap: any;
 
 const links = [
   { href: "#about", label: "ABOUT", num: "01." },
@@ -16,12 +13,35 @@ const links = [
   { href: "#contact", label: "CONTACT", num: "07." },
 ];
 
+const navContainerVariants: Variants = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.09,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const navItemVariants: Variants = {
+  hidden: { opacity: 0, y: 8 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: "easeOut",
+    },
+  },
+};
+
 type NavbarProps = {
   letter: string;
   resumeUrl: string;
   activeSection: string;
   dark: boolean;
   onToggleTheme: () => void;
+  logoAnchorRef?: React.RefObject<HTMLAnchorElement | null>;
 };
 
 export function Navbar({
@@ -30,29 +50,12 @@ export function Navbar({
   activeSection,
   dark,
   onToggleTheme,
+  logoAnchorRef,
 }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const navRef = useRef<HTMLElement>(null);
-
-  useGSAP(() => {
-    const el = navRef.current;
-    if (!el) return;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const items = el.querySelectorAll("[data-nav-item]");
-    if (reduced) {
-      gsap.set(items, { autoAlpha: 1, y: 0 });
-      return;
-    }
-    gsap.from(items, {
-      autoAlpha: 0,
-      y: -10,
-      duration: 0.5,
-      stagger: 0.05,
-      ease: "power3.out",
-      delay: 0.15,
-    });
-  }, []);
+  const fallbackLogoRef = useRef<HTMLAnchorElement>(null);
+  const resolvedLogoRef = logoAnchorRef ?? fallbackLogoRef;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -76,23 +79,28 @@ export function Navbar({
   return (
     <>
       <nav
-        ref={navRef}
         className={`fixed inset-x-0 top-0 z-[100] flex h-[70px] items-center justify-between px-[18px] backdrop-blur-md backdrop-saturate-200 transition duration-300 md:h-20 md:px-10 ${
           scrolled
             ? "bg-bg/10 shadow-nav"
             : "bg-bg/10"
         }`}
       >
-        <Logo letter={letter} />
+        <Logo letter={letter} ref={resolvedLogoRef} />
 
-        <div className="hidden items-center gap-7 md:flex">
+        <motion.div
+          variants={navContainerVariants}
+          initial="hidden"
+          animate="show"
+          className="hidden items-center gap-7 md:flex"
+        >
           {links.map((link) => {
             const isActive = link.href === `#${activeSection}`;
             return (
-              <a
+              <motion.a
                 key={link.href}
                 href={link.href}
-                data-nav-item
+                variants={navItemVariants}
+                data-entrance-nav
                 className={`font-mono text-nav tracking-wide transition ${isActive ? "text-accent" : "text-ink hover:text-accent"}`}
               >
                 <span
@@ -101,28 +109,30 @@ export function Navbar({
                   {link.num}
                 </span>
                 {link.label}
-              </a>
+              </motion.a>
             );
           })}
-          <a
+          <motion.a
             href={resumeUrl}
             target="_blank"
             rel="noreferrer"
-            data-nav-item
+            variants={navItemVariants}
+            data-entrance-cta
             className="ml-3 inline-flex items-center justify-center rounded border border-ink px-[1.1rem] py-[0.55rem] font-mono text-nav tracking-wide text-ink transition hover:border-accent hover:bg-accent/20"
           >
             Resume
-          </a>
-          <button
+          </motion.a>
+          <motion.button
             type="button"
             onClick={onToggleTheme}
-            data-nav-item
+            variants={navItemVariants}
+            data-entrance-theme
             className="ml-2 grid size-9 place-items-center rounded border border-ink/30 text-ink-muted transition-all duration-300 hover:border-accent hover:text-accent cursor-pointer overflow-hidden"
             aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
           >
             <ThemeIcon dark={dark} />
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
 
         <button
           type="button"

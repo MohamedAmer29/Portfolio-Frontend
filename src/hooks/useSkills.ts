@@ -5,13 +5,17 @@ import {
   type SkillCategory,
 } from "../components/skills/skillsData";
 
-interface ApiSkill {
+export interface ApiSkill {
   id: string;
   name: string;
   category: string;
   proficiency: number;
-  description: string;
+  yearsOfExperience: number;
+  icon?: string;
+  description?: string;
   related: string[];
+  displayOrder: number;
+  isFeatured: boolean;
 }
 
 interface SkillsResponse {
@@ -24,14 +28,40 @@ interface SkillsResponse {
   }[];
 }
 
+export const apiCategoryLabels: Record<SkillCategory, string> = {
+  frontend: "Frontend",
+  backend: "Backend",
+  database: "Database",
+  devops: "DevOps",
+  ai: "ai",
+  tools: "Tools",
+  other: "Other",
+};
+
+const categoryMap: Record<string, SkillCategory> = {
+  Frontend: "frontend",
+  Backend: "backend",
+  Database: "database",
+  DevOps: "devops",
+  ai: "ai",
+  Tools: "tools",
+  Other: "other",
+};
+
 function toSkill(s: ApiSkill): Skill {
+  const proficiency = s.proficiency ?? 0;
   return {
     id: s.id,
     name: s.name,
-    category: s.category.toLowerCase() as SkillCategory,
-    description: s.description,
+    category: categoryMap[s.category] ?? "other",
+    description: s.description ?? "",
     related: s.related ?? [],
-    level: s.proficiency,
+    level: proficiency,
+    proficiency,
+    yearsOfExperience: s.yearsOfExperience ?? 0,
+    icon: s.icon ?? "",
+    displayOrder: s.displayOrder ?? 0,
+    isFeatured: s.isFeatured ?? false,
   };
 }
 

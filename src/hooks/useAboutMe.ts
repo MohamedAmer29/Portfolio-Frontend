@@ -15,6 +15,7 @@ export interface AboutMeData {
   updatedAt: string;
   id: string;
   sentences: string[];
+  technologyIds: string[];
   image: string;
   technologies: AboutTechnology[];
 }

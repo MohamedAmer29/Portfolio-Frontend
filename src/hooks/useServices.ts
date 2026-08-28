@@ -30,7 +30,7 @@ interface ApiService {
   isFeatured: boolean;
 }
 
-function toService(item: ApiService): Service {
+export function toService(item: ApiService): Service {
   return {
     id: item.id,
     number: item.number ?? "",
@@ -41,9 +41,11 @@ function toService(item: ApiService): Service {
     description: item.description ?? "",
     technologies: item.technologies ?? [],
     icon: getServiceIcon(item.icon),
+    iconName: item.icon ?? "Layers",
     groups: item.groups ?? [],
     highlights: item.highlights ?? [],
     isFeatured: item.isFeatured,
+    displayOrder: item.displayOrder,
   };
 }
 
@@ -51,11 +53,16 @@ export function useServices() {
   return useQuery({
     queryKey: ["services"],
     queryFn: async () => {
-      const { data } = await api.get<ApiService[]>("services");
-      return [...data]
-        .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
-        .map(toService);
+      try {
+        const { data } = await api.get<ApiService[]>("services");
+        return [...data]
+          .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
+          .map(toService);
+      } catch {
+        return [];
+      }
     },
-    retry: 1,
+    retry: false,
+    placeholderData: [],
   });
 }

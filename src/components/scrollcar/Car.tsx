@@ -58,27 +58,28 @@ export function Car({
           ease: "power3.out",
           delay: 0.5,
         });
-      } else {
-        if (shouldAnimate && !hasAnimated.current) {
-          hasAnimated.current = true;
+      } else if (shouldAnimate && !hasAnimated.current) {
+        hasAnimated.current = true;
 
-          gsap.fromTo(
-            group.current.position,
-            { x: 5.5 },
-            { x: 0, duration: 1.15, ease: "power3.out" },
-          );
-          gsap.fromTo(
-            group.current.scale,
-            { x: 1.55, y: 1.55, z: 1.55 },
-            {
-              x: 1,
-              y: 1,
-              z: 1,
-              duration: 1.15,
-              ease: "power3.out",
-            },
-          );
-        }
+        gsap.fromTo(
+          group.current.position,
+          { x: 5.5 },
+          { x: 0, duration: 1.15, ease: "power3.out" },
+        );
+        gsap.fromTo(
+          group.current.scale,
+          { x: 1.55, y: 1.55, z: 1.55 },
+          {
+            x: 1,
+            y: 1,
+            z: 1,
+            duration: 1.15,
+            ease: "power3.out",
+          },
+        );
+      } else if (!shouldAnimate && !hasAnimated.current) {
+        gsap.set(group.current.position, { x: 5.5 });
+        gsap.set(group.current.scale, { x: 1.55, y: 1.55, z: 1.55 });
       }
     });
   }, [shouldAnimate, isLoader]);

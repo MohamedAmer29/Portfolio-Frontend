@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useGSAP } from "../lib/gsap";
 
-declare const gsap: any
+declare const gsap: typeof import("gsap").gsap;
 
 type PageLoaderProps = {
   letter: string;
@@ -46,7 +46,7 @@ export function PageLoader({ letter, onComplete }: PageLoaderProps) {
     if (reduced) {
       gsap.set(hex, { strokeDashoffset: 0 });
       gsap.set(mark, { opacity: 1 });
-      gsap.set(car, { x: -40, opacity: 1 });
+      gsap.set(car, { x: 0, opacity: 1 });
       gsap.to(root, {
         autoAlpha: 0,
         duration: 0.25,
@@ -166,15 +166,13 @@ export function PageLoader({ letter, onComplete }: PageLoaderProps) {
           </svg>
         </div>
 
-        <div
-          ref={carRef}
-          className="h-8 w-[250px] opacity-0"
-        >
+        <div ref={carRef} className="h-8 w-[250px] opacity-0">
           <svg
             viewBox="0 0 120 40"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             className="h-full w-full text-ink-muted"
+            aria-hidden="true"
           >
             <rect x="20" y="14" width="80" height="16" rx="4" fill="currentColor" opacity="0.8" />
             <path d="M35 14 L45 4 L75 4 L85 14" fill="currentColor" opacity="0.6" />

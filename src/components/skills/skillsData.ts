@@ -3,7 +3,9 @@ export type SkillCategory =
   | "backend"
   | "database"
   | "devops"
-  | "ai";
+  | "ai"
+  | "tools"
+  | "other";
 
 export interface Skill {
   id: string;
@@ -12,6 +14,11 @@ export interface Skill {
   description: string;
   related: string[];
   level: number;
+  proficiency?: number;
+  yearsOfExperience?: number;
+  icon?: string;
+  displayOrder?: number;
+  isFeatured?: boolean;
 }
 
 export const CATEGORIES: { id: SkillCategory; label: string }[] = [
@@ -20,6 +27,8 @@ export const CATEGORIES: { id: SkillCategory; label: string }[] = [
   { id: "database", label: "Databases" },
   { id: "devops", label: "DevOps" },
   { id: "ai", label: "AI & Vision" },
+  { id: "tools", label: "Tools" },
+  { id: "other", label: "Other" },
 ];
 
 const skillsList: Omit<Skill, "id">[] = [
@@ -262,4 +271,6 @@ export const CATEGORY_COLORS: Record<SkillCategory, string> = {
   database: "#6b9e9e",
   devops: "#5a8a8a",
   ai: "#4a7878",
+  tools: "#3d6b6b",
+  other: "#2f5757",
 };

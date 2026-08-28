@@ -37,6 +37,13 @@ export function useExperience() {
           }`,
           url: "",
           bullets: item.description,
+          position: item.position,
+          location: item.location ?? "",
+          employmentType: item.employmentType,
+          startDate: item.startDate,
+          endDate: item.endDate ?? "",
+          isCurrent: item.isCurrent,
+          displayOrder: item.displayOrder,
         }),
       );
     },

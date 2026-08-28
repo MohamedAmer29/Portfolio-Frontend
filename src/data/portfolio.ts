@@ -5,8 +5,9 @@ export const portfolio = {
   email: 'm1o1h1a1a1@gmail.com',
   resumeUrl: '/resume.pdf',
   social: {
-    github: 'https://github.com/',
-    linkedin: 'https://linkedin.com/in/',
+    github: 'https://github.com/MohamedAmer29',
+    linkedin: 'https://www.linkedin.com/in/mohamed-amer-86631525a/',
+    phone: '+201009487734',
   },
   hero: {
     greeting: 'Hey! my name is',

@@ -1,3 +1,4 @@
+import { Pencil, Trash2 } from "lucide-react";
 import { Reveal } from "../Reveal";
 import { CATEGORIES, CATEGORY_COLORS } from "./skillsData";
 import type { Skill, SkillCategory } from "./skillsData";
@@ -5,15 +6,26 @@ import type { Skill, SkillCategory } from "./skillsData";
 export function SkillsMobileList({
   activeCategory,
   skills,
+  showActions,
+  onEdit,
+  onDelete,
 }: {
   activeCategory: SkillCategory | null;
   skills: Skill[];
+  showActions: boolean;
+  onEdit: (skill: Skill) => void;
+  onDelete: (skill: Skill) => void;
 }) {
   return (
     <div className="space-y-8 md:hidden">
       {CATEGORIES.map((cat) => {
         const catSkills = skills.filter((s) => s.category === cat.id);
-        if (activeCategory && activeCategory !== cat.id) return null;
+        if (
+          catSkills.length === 0 ||
+          (activeCategory && activeCategory !== cat.id)
+        ) {
+          return null;
+        }
         return (
           <Reveal key={cat.id} delay={0.05}>
             <div>
@@ -52,6 +64,28 @@ export function SkillsMobileList({
                         />
                       </div>
                     </div>
+                    {showActions && (
+                      <div className="flex shrink-0 flex-col gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => onEdit(skill)}
+                          className="grid size-8 place-items-center rounded-sm border border-ink/10 text-ink-muted transition hover:border-accent hover:bg-accent/10 hover:text-accent"
+                          aria-label={`Edit ${skill.name}`}
+                          title="Edit"
+                        >
+                          <Pencil className="size-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onDelete(skill)}
+                          className="grid size-8 place-items-center rounded-sm border border-ink/10 text-ink-muted transition hover:border-error hover:bg-error/10 hover:text-error"
+                          aria-label={`Delete ${skill.name}`}
+                          title="Delete"
+                        >
+                          <Trash2 className="size-3.5" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

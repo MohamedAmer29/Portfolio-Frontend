@@ -10,6 +10,7 @@ export interface Education {
   coursework?: string[];
   achievements?: string[];
   logo?: string;
+  displayOrder?: number;
 }
 
 export const education: Education[] = [

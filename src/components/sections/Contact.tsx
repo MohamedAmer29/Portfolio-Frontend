@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { Reveal } from "../Reveal";
+import { AdminSectionActions } from "../admin/AdminSectionActions";
+import { DataSourceTag } from "../admin/DataSourceTag";
 import { api } from "../../lib/api";
+import { useAuth } from "../../hooks/useAuth";
 import { SectionHeading } from "../SectionHeading";
 
 type ContactFormData = {
@@ -21,6 +24,7 @@ type ContactProps = {
 type Result = { type: "success" | "error"; message: string } | null;
 
 export function Contact({ eyebrow, title, blurb, email }: ContactProps) {
+  const { isAdmin } = useAuth();
   const {
     register,
     handleSubmit,
@@ -92,7 +96,13 @@ export function Contact({ eyebrow, title, blurb, email }: ContactProps) {
       <div className="mx-auto w-full max-w-[1000px] md:w-[min(100%-10rem,1000px)]">
       <Reveal>
         <div>
-          <SectionHeading number="07." title={eyebrow} />
+          <div className="mb-7 flex flex-wrap items-center justify-between gap-4 md:mb-10">
+            <SectionHeading number="07." title={eyebrow} className="mb-0" />
+            <AdminSectionActions section="contact" />
+          </div>
+          {isAdmin && (
+            <DataSourceTag hasServerData={false} className="mb-4 block text-left" />
+          )}
           <h2 className="mb-4 font-sans text-[clamp(2rem,6vw,3.5rem)] font-extrabold tracking-[-0.03em] text-ink">
             {title}
           </h2>

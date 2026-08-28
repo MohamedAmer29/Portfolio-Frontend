@@ -10,6 +10,7 @@ interface ApiTechnology {
 }
 
 interface ApiProject {
+  id: string;
   title: string;
   slug: string;
   shortDescription: string;
@@ -35,8 +36,9 @@ export function useProjects() {
       const { data } = await api.get<ApiProject[]>("projects");
       return data
         .map(
-          (item): Project => ({
-            title: item.title,
+        (item): Project => ({
+          id: item.id,
+          title: item.title,
             slug: item.slug,
             shortDescription: item.shortDescription,
             description: item.description || item.shortDescription,

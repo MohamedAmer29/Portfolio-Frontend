@@ -1,9 +1,24 @@
 import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
 import { Reveal } from '../Reveal'
+import { AdminSectionActions } from '../admin/AdminSectionActions'
+import { DataSourceTag } from '../admin/DataSourceTag'
 import { SectionHeading } from '../SectionHeading'
+import { ProjectForm } from './ProjectForm'
 import { useProjects } from '../../hooks/useProjects'
+import {
+  useProjectsMutations,
+  DEFAULT_PROJECT_BODY,
+  toPatch,
+  type ProjectDraft,
+} from '../../hooks/useProjectsMutations'
+import { useAuth } from '../../hooks/useAuth'
+import { useDebouncedCallback } from '../../lib/useDebouncedCallback'
 
 export type Project = {
+  id?: string
+  technologyIds?: string[]
   title: string
   slug?: string
   shortDescription?: string
@@ -46,16 +61,189 @@ function IconExternal() {
 
 export function Projects({ projects }: ProjectsProps) {
   const { data: projectsData } = useProjects()
+  const { isAdmin } = useAuth()
+  const {
+    updateProject,
+    createProject,
+    deleteProject,
+    uploadProjectImage,
+  } = useProjectsMutations()
   const allProjects = projectsData ?? projects
+  const hasServerData = Boolean(projectsData && projectsData.length > 0)
+
+  const [editMode, setEditMode] = useState(false)
+  const [draftProjects, setDraftProjects] = useState<ProjectDraft[] | null>(null)
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+  const [uploadingId, setUploadingId] = useState<string | null>(null)
+
+  const toDraft = (p: Project): ProjectDraft => ({
+    id: p.id ?? '',
+    title: p.title,
+    slug: p.slug ?? '',
+    shortDescription: p.shortDescription ?? '',
+    description: p.description,
+    githubUrl: p.githubUrl ?? '',
+    liveUrl: p.liveUrl ?? '',
+    featured: p.featured ?? false,
+    status: p.status ?? 'PLANNING',
+    displayOrder: p.displayOrder ?? 0,
+    startDate: p.startDate ?? '',
+    endDate: p.endDate ?? '',
+    technologies: p.technologyIds ?? [],
+    image: p.image ?? null,
+  })
+
+  const rawToDraft = (raw: any): ProjectDraft => ({
+    id: raw?.id ?? '',
+    title: raw?.title ?? '',
+    slug: raw?.slug ?? '',
+    shortDescription: raw?.shortDescription ?? '',
+    description: raw?.description ?? '',
+    githubUrl: raw?.githubUrl ?? '',
+    liveUrl: raw?.liveUrl ?? '',
+    featured: raw?.featured ?? false,
+    status: raw?.status ?? 'PLANNING',
+    displayOrder: raw?.displayOrder ?? 0,
+    startDate: raw?.startDate ?? '',
+    endDate: raw?.endDate ?? '',
+    technologies:
+      raw?.technologyIds ??
+      raw?.technologies?.map((t: any) => t.id) ??
+      raw?.tech ??
+      [],
+    image: raw?.image ?? null,
+  })
+
+  useEffect(() => {
+    if (!editMode) {
+      setDraftProjects(null)
+    } else if (draftProjects === null && projectsData) {
+      setDraftProjects(projectsData.map(toDraft))
+    }
+  }, [editMode, projectsData, draftProjects])
+
+  const debouncedSave = useDebouncedCallback(
+    (id: string, patch: ReturnType<typeof toPatch>) => {
+      updateProject.mutate({ id, patch })
+    },
+    500,
+  )
+
+  const handleProjectChange = (index: number, patch: Partial<ProjectDraft>) => {
+    const base = draftProjects ?? projectsData?.map(toDraft) ?? []
+    const next = base.map((p, i) => (i === index ? { ...p, ...patch } : p))
+    setDraftProjects(next)
+    const id = next[index].id
+    debouncedSave(id, toPatch(next[index]))
+  }
+
+  const handleAdd = async () => {
+    try {
+      const created = (await createProject.mutateAsync(DEFAULT_PROJECT_BODY)) as
+        | any
+        | { data: any }
+      const entity = (created as any)?.data ?? created
+      toast.success('Project created successfully.')
+      setEditMode(true)
+      setDraftProjects((prev) => [
+        ...(prev ?? projectsData?.map(toDraft) ?? []),
+        rawToDraft(entity),
+      ])
+    } catch {
+      /* error toast handled in mutation */
+    }
+  }
+
+  const handleDelete = (id: string) => {
+    setPendingDeleteId(id)
+  }
+
+  const confirmDelete = async () => {
+    const id = pendingDeleteId
+    if (!id) return
+    setPendingDeleteId(null)
+    setDraftProjects((prev) =>
+      prev ? prev.filter((p) => p.id !== id) : prev,
+    )
+    try {
+      await deleteProject.mutateAsync(id)
+      toast.success('Project deleted successfully.')
+    } catch {
+      /* error toast handled in mutation */
+    }
+  }
+
+  const handleImageChange = async (index: number, file: File) => {
+    const draft = (draftProjects ?? [])[index]
+    if (!draft) return
+    setUploadingId(draft.id)
+    try {
+      const res = await uploadProjectImage.mutateAsync({
+        id: draft.id,
+        file,
+        hasImage: Boolean(draft.image),
+      })
+      toast.success('Project image uploaded successfully.')
+      setDraftProjects((prev) =>
+        prev
+          ? prev.map((p, i) => (i === index ? { ...p, image: res.image } : p))
+          : prev,
+      )
+    } finally {
+      setUploadingId(null)
+    }
+  }
+
+  const editList = draftProjects ?? projectsData?.map(toDraft) ?? []
 
   return (
     <section className="scroll-mt-20 px-5 py-[72px] md:px-0 md:py-[100px]" id="work">
       <div className="mx-auto w-full max-w-[1000px] md:w-[min(100%-10rem,1000px)]">
         <Reveal>
-          <SectionHeading number="05." title="Some Projects I've Built" />
+          <div className="mb-7 flex flex-wrap items-center justify-between gap-4 md:mb-10">
+            <SectionHeading number="05." title="Some Projects I've Built" className="mb-0" />
+            {isAdmin && (
+              <AdminSectionActions
+                section="projects"
+                onCreate={handleAdd}
+                onUpdate={() => setEditMode((v) => !v)}
+                isCreatePending={createProject.isPending}
+              />
+            )}
+          </div>
         </Reveal>
 
-        <div className="flex flex-col gap-6 md:gap-24">
+        {isAdmin && (
+          <DataSourceTag hasServerData={hasServerData} className="mb-4 block" />
+        )}
+
+        {(updateProject.isPending || uploadProjectImage.isPending) && (
+          <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.1em] text-accent/70">
+            saving…
+          </p>
+        )}
+
+        {editMode ? (
+          projectsData ? (
+            <div className="grid items-start gap-6 lg:grid-cols-2">
+              {editList.map((project, index) => (
+                <ProjectForm
+                  key={project.id || index}
+                  project={project}
+                  onChange={(patch) => handleProjectChange(index, patch)}
+                  onImageChange={(file) => handleImageChange(index, file)}
+                  onDelete={() => handleDelete(project.id)}
+                  isUploading={uploadingId === project.id}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="font-mono text-[12px] uppercase tracking-[0.1em] text-ink-soft">
+              Loading projects…
+            </p>
+          )
+        ) : (
+          <div className="flex flex-col gap-6 md:gap-24">
           {allProjects.map((project, index) => {
             const reversed = index % 2 === 1
             const imgSrc =
@@ -77,20 +265,21 @@ export function Projects({ projects }: ProjectsProps) {
                 : null
 
             return (
-              <Reveal key={project.title} delay={0.05 * index}>
+              <Reveal key={project.id ?? index} delay={0.05 * index}>
                 {/* Mobile card */}
                 <article className="relative grid min-h-[360px] overflow-hidden bg-project rounded-lg md:hidden">
                   <div className="absolute inset-0">
                     {imgSrc ? (
-                      <motion.img
-                        src={imgSrc}
-                        alt={project.title}
-                        className="size-full object-cover"
-                        initial={{ opacity: 0, scale: 1.05 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                      />
+                      <div className="photo-frame photo-frame--project size-full rounded-none">
+                        <motion.img
+                          src={imgSrc}
+                          alt={project.title}
+                          initial={{ opacity: 0, scale: 1.05 }}
+                          whileInView={{ opacity: 1, scale: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.6 }}
+                        />
+                      </div>
                     ) : (
                       <div className="grid size-full place-items-center bg-[radial-gradient(circle_at_20%_20%,rgba(127,173,173,0.35),transparent_45%),radial-gradient(circle_at_80%_70%,rgba(90,120,140,0.4),transparent_40%),linear-gradient(145deg,#243038,#13181d)] font-mono text-[13px] uppercase tracking-[0.08em] text-white/35">
                         {imageLabel}
@@ -145,34 +334,18 @@ export function Projects({ projects }: ProjectsProps) {
                 <article className="group relative hidden md:grid md:grid-cols-12 md:items-center">
                   {/* Image */}
                   <div
-                    className={`relative col-span-7 row-start-1 aspect-video overflow-hidden rounded-sm shadow-[0_15px_40px_-15px_rgba(26,31,36,0.35)] ${
+                    className={`relative col-span-7 row-start-1 ${
                       reversed ? 'col-start-6' : 'col-start-1'
                     }`}
                   >
-                    <div className="relative size-full transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:shadow-[0_20px_50px_-20px_rgba(26,31,36,0.4)]">
+                    <div className="photo-frame photo-frame--project transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:shadow-[0_20px_50px_-20px_rgba(26,31,36,0.4)]">
                       {imgSrc ? (
-                        <motion.img
-                          src={imgSrc}
-                          alt={project.title}
-                          className="size-full object-cover"
-                          whileHover={{ scale: 1.06 }}
-                          transition={{ duration: 0.4 }}
-                        />
+                        <img src={imgSrc} alt={project.title} />
                       ) : (
                         <div className="grid size-full place-items-center bg-[radial-gradient(circle_at_20%_20%,rgba(127,173,173,0.35),transparent_45%),radial-gradient(circle_at_80%_70%,rgba(90,120,140,0.4),transparent_40%),linear-gradient(145deg,#243038,#13181d)] font-mono text-[13px] uppercase tracking-[0.08em] text-white/40 transition-all duration-500 group-hover:text-white/55">
                           {imageLabel}
                         </div>
                       )}
-
-                      {/* Teal tint — fades on hover to reveal image clearly */}
-                      <div
-                        className="pointer-events-none absolute inset-0 bg-accent/50 mix-blend-multiply transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:bg-transparent group-hover:opacity-0"
-                        aria-hidden="true"
-                      />
-                      <div
-                        className="pointer-events-none absolute inset-0 bg-bg/15 transition-all duration-500 group-hover:opacity-0"
-                        aria-hidden="true"
-                      />
                     </div>
                   </div>
 
@@ -264,7 +437,38 @@ export function Projects({ projects }: ProjectsProps) {
               </Reveal>
             )
           })}
+          </div>
+        )}
+      {pendingDeleteId && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="w-full max-w-[400px] rounded-lg border border-ink/10 bg-bg-elevated p-8 shadow-[0_20px_60px_rgba(26,31,36,0.2)]">
+            <h2 className="mb-2 font-sans text-[1.25rem] font-extrabold tracking-[-0.03em] text-ink">
+              Delete Project
+            </h2>
+            <p className="mb-6 font-mono text-[13px] text-ink-muted">
+              Are you sure you want to delete this project? This action cannot be
+              undone.
+            </p>
+            <div className="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setPendingDeleteId(null)}
+                className="rounded-sm border border-ink px-5 py-2 font-mono text-[12px] uppercase tracking-[0.1em] text-ink transition hover:border-accent hover:bg-accent/10"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                disabled={deleteProject.isPending}
+                className="rounded-sm border border-error bg-error px-5 py-2 font-mono text-[12px] uppercase tracking-[0.1em] text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {deleteProject.isPending ? 'Deleting…' : 'Confirm'}
+              </button>
+            </div>
+          </div>
         </div>
+      )}
       </div>
     </section>
   )

@@ -1,8 +1,22 @@
 import { Canvas } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
+import { motion, type Variants } from "framer-motion";
 import * as THREE from "three";
 import { useThemeColor } from "../../hooks/useThemeColor";
 import { Scene } from "./Scene";
+
+const roadRailVariants: Variants = {
+  hidden: { opacity: 0, x: 20 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.6,
+      delay: 0.95,
+      ease: "easeOut",
+    },
+  },
+};
 
 const ROAD_LENGTH = 16.2;
 const START_Z = ROAD_LENGTH / 2 - 1.2;
@@ -211,7 +225,12 @@ export function ScrollCar({ shouldAnimate }: { shouldAnimate: boolean }) {
   };
 
   return (
-    <aside className="pointer-events-none fixed bottom-0 left-0 top-[70px] md:top-20 z-30 hidden w-[95px] lg:block">
+    <motion.aside
+      variants={roadRailVariants}
+      initial="hidden"
+      animate="show"
+      className="pointer-events-none fixed bottom-0 left-0 top-[70px] md:top-20 z-30 hidden w-[95px] lg:block"
+    >
       <div
         ref={panelRef}
         className="pointer-events-auto relative h-full w-full border-r border-ink/10 bg-gradient-to-b from-bg/92 via-bg/86 to-bg/94 backdrop-blur-sm shadow-[1px_0_0_rgba(26,31,36,0.02)]"
@@ -303,6 +322,6 @@ export function ScrollCar({ shouldAnimate }: { shouldAnimate: boolean }) {
         Scroll progress indicated by car on road with station stops. Click any
         station or rail to navigate.
       </span>
-    </aside>
+    </motion.aside>
   );
 }

@@ -39,10 +39,12 @@ export interface Service {
   description: string;
   technologies: string[];
   icon: LucideIcon;
+  iconName?: string;
   highlights?: string[];
   details?: string[];
   groups?: { label: string; items: string[] }[];
   isFeatured?: boolean;
+  displayOrder?: number;
 }
 
 const SERVICE_ICONS: Record<string, LucideIcon> = {
