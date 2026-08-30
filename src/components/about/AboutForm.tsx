@@ -24,6 +24,20 @@ type AboutFormProps = {
 
 export function AboutForm({ initialData, onClose }: AboutFormProps) {
   const { data: technologies } = useTechnologies();
+  const portfolioTech = [
+    'React',
+    'TypeScript',
+    'Next.js',
+    'Node.js',
+    'NestJS',
+    'PostgreSQL',
+    'MongoDB',
+    'Prisma',
+    'Tailwind CSS',
+  ];
+  const techList = technologies?.length
+    ? technologies.map((t) => ({ id: t.id, name: t.name, category: t.category }))
+    : portfolioTech.map((name) => ({ id: name, name, category: null } as const));
   const { updateAboutMe, upsertAboutImage } = useAboutMeMutations();
 
   const [sentences, setSentences] = useState<string[]>(
@@ -144,8 +158,8 @@ export function AboutForm({ initialData, onClose }: AboutFormProps) {
 
         <div>
           <label className={labelClass}>Technologies</label>
-          <div className="thin-scrollbar mb-3 grid max-h-[200px] gap-2 overflow-y-auto rounded-sm border border-ink/15 bg-bg-elevated p-3">
-            {technologies?.map((tech) => (
+          <div className="thin-scrollbar mb-3 grid grid-cols-2 gap-2 overflow-y-auto rounded-sm border border-ink/15 bg-bg-elevated p-3">
+            {techList.map((tech) => (
               <button
                 key={tech.id}
                 type="button"
@@ -166,7 +180,7 @@ export function AboutForm({ initialData, onClose }: AboutFormProps) {
           {selectedTechIds.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {selectedTechIds.map((id) => {
-                const tech = technologies?.find((t) => t.id === id);
+                const tech = techList.find((t) => t.id === id);
                 return (
                   <span
                     key={id}
@@ -239,7 +253,7 @@ export function AboutForm({ initialData, onClose }: AboutFormProps) {
         <button
           type="button"
           onClick={onClose}
-          className="rounded-sm border border-accent bg-accent px-5 py-2 font-mono text-[12px] uppercase tracking-[0.1em] text-white transition hover:opacity-90"
+          className="rounded-sm border border-accent bg-accent px-5 py-2 font-mono text-[12px] uppercase tracking-[0.1em] text-bg transition hover:opacity-90"
         >
           Done
         </button>

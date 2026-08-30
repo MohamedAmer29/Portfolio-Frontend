@@ -40,7 +40,7 @@ function IconLinkedIn() {
 
 export function Footer({ name, github, linkedin }: FooterProps) {
   return (
-    <footer className="border-t border-ink/8 px-6 pb-14 pt-10 text-center font-mono text-[12px] text-ink-soft">
+    <footer className="border-t border-ink/8 px-6 pb-14 pt-10 text-center font-mono text-[12px] tracking-widest text-ink-soft">
       <Reveal>
         <div className="mx-auto w-full max-w-[1000px] md:w-[min(100%-10rem,1000px)]">
         <p>

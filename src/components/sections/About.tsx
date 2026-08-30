@@ -11,6 +11,7 @@ import { TechnologyManager } from "../technologies/TechnologyManager";
 import { useAuth } from "../../hooks/useAuth";
 import { useAboutMe } from "../../hooks/useAboutMe";
 import { useAboutMeMutations, DEFAULT_ABOUT_BODY } from "../../hooks/useAboutMeMutations";
+import { useSmartImage } from "../../hooks/useSmartImage";
 import { useGSAP } from "../../lib/gsap";
 
 declare const gsap: any;
@@ -28,12 +29,13 @@ export function About({ paragraphs, tech, letter, image }: AboutProps) {
   const { upsertAboutImage, deleteAboutMe, createAboutMe } = useAboutMeMutations();
   const [intro, ...rest] = about?.sentences ?? paragraphs;
   const body = rest;
-  const techList = about?.technologies ?? tech.map((name) => ({ id: name, name, category: null } as const));
+  const techList = about?.technologies?.length
+      ? about.technologies.map((t) => ({ id: t.id, name: t.name, category: t.category }))
+      : tech.map((name) => ({ id: name, name, category: null } as const));
   const rawImageUrl = about?.image || image;
   const imageUrl = rawImageUrl && rawImageUrl.includes('cloudinary.com')
     ? rawImageUrl.replace('/upload/', '/upload/w_600,c_limit,f_auto,q_auto/')
     : rawImageUrl;
-  const [failedUrls, setFailedUrls] = useState<Record<string, boolean>>({});
   const [showModal, setShowModal] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -41,16 +43,16 @@ export function About({ paragraphs, tech, letter, image }: AboutProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const photoRef = useRef<HTMLDivElement>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const {
+    ref: imgRef,
+    failed: imgFailed,
+    onLoad: handleImageLoad,
+    onError: handleImageError,
+    showSkeleton: showImageSkeleton,
+  } = useSmartImage(imageUrl);
 
-  const handleImageError = () => {
-    if (imageUrl) {
-      setFailedUrls((prev) => ({ ...prev, [imageUrl]: true }));
-    }
-  };
-
-  const shouldShowFallback = !imageUrl || Boolean(failedUrls[imageUrl]);
+  const shouldShowFallback = !imageUrl || imgFailed;
 
   const handleUpload = async () => {
     if (!selectedFile) {
@@ -209,7 +211,7 @@ export function About({ paragraphs, tech, letter, image }: AboutProps) {
         ) : (
           <div className="grid items-start gap-10 md:grid-cols-[1.2fr_0.8fr] md:gap-12">
           <Reveal delay={0.08}>
-            <div ref={contentRef} className="space-y-4 text-[17px] leading-[1.7] text-ink-muted md:text-body">
+            <div ref={contentRef} className="space-y-5 text-[17px] leading-[1.8] tracking-wide text-ink-muted md:text-body">
               <p className="max-w-[540px]">{intro}</p>
               {body.map((paragraph) => (
                 <p key={paragraph.slice(0, 24)} className="max-w-[540px]">
@@ -219,7 +221,7 @@ export function About({ paragraphs, tech, letter, image }: AboutProps) {
               <p className="max-w-[540px]">
                 Here are a few technologies I've been working with recently:
               </p>
-              <ul className="mt-4 grid max-w-[480px] grid-cols-2 gap-x-5 gap-y-2.5 md:grid-cols-3">
+              <ul className="mt-4 grid grid-cols-2 gap-x-5 gap-y-2.5 md:grid-cols-3">
                 {techList.map((item) => (
                   <li
                     key={item.id}
@@ -243,14 +245,23 @@ export function About({ paragraphs, tech, letter, image }: AboutProps) {
               whileHover={{ scale: 1.02 }}
             >
               {!shouldShowFallback ? (
-                <motion.img
-                  ref={imgRef}
-                  src={imageUrl}
-                  alt="Portrait"
-                  onError={handleImageError}
-                  whileHover={{ scale: 1.06 }}
-                  transition={{ duration: 0.4 }}
-                />
+                <>
+                  {showImageSkeleton && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-0 z-[1] animate-pulse bg-ink/10"
+                    />
+                  )}
+                  <motion.img
+                    ref={imgRef}
+                    src={imageUrl}
+                    alt="Portrait"
+                    onLoad={handleImageLoad}
+                    onError={handleImageError}
+                    whileHover={{ scale: 1.06 }}
+                    transition={{ duration: 0.4 }}
+                  />
+                </>
               ) : (
                 <span className="absolute inset-0 grid place-items-center text-[5.5rem] font-extrabold tracking-[-0.04em] text-white/30">
                   {letter}
@@ -316,7 +327,7 @@ export function About({ paragraphs, tech, letter, image }: AboutProps) {
                 type="button"
                 onClick={handleUpload}
                 disabled={isSubmitting || !selectedFile}
-                className="rounded-sm border border-accent bg-accent px-5 py-2 font-mono text-[12px] uppercase tracking-[0.1em] text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-sm border border-accent bg-accent px-5 py-2 font-mono text-[12px] uppercase tracking-[0.1em] text-bg transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSubmitting ? "Uploading…" : "Update"}
               </button>

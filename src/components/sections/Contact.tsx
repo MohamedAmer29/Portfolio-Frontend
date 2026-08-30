@@ -106,7 +106,7 @@ export function Contact({ eyebrow, title, blurb, email }: ContactProps) {
           <h2 className="mb-4 font-sans text-[clamp(2rem,6vw,3.5rem)] font-extrabold tracking-[-0.03em] text-ink">
             {title}
           </h2>
-          <p className="mx-auto mb-10 max-w-[520px] text-[17px] leading-[1.8] text-ink-muted md:text-body">
+          <p className="mx-auto mb-10 max-w-[520px] text-[17px] leading-[1.8] tracking-wide text-ink-muted md:text-body">
             {blurb}
           </p>
         </div>

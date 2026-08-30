@@ -64,7 +64,7 @@ export function SkillsManager({ onClose }: SkillsManagerProps) {
           <button
             type="button"
             onClick={() => setShowCreateForm(true)}
-            className="inline-flex items-center gap-1.5 rounded-sm border border-accent bg-accent px-4 py-2 font-mono text-[11px] uppercase tracking-[0.1em] text-white transition hover:opacity-90"
+            className="inline-flex items-center gap-1.5 rounded-sm border border-accent bg-accent px-4 py-2 font-mono text-[11px] uppercase tracking-[0.1em] text-bg transition hover:opacity-90"
           >
             <Plus className="size-3.5" /> Add Skill
           </button>

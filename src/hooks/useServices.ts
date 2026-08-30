@@ -49,20 +49,22 @@ export function toService(item: ApiService): Service {
   };
 }
 
+export const servicesQueryOptions = {
+  queryKey: ["services"] as const,
+  queryFn: async () => {
+    try {
+      const { data } = await api.get<ApiService[]>("services");
+      return [...data]
+        .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
+        .map(toService);
+    } catch {
+      return [];
+    }
+  },
+  retry: false,
+  placeholderData: [],
+};
+
 export function useServices() {
-  return useQuery({
-    queryKey: ["services"],
-    queryFn: async () => {
-      try {
-        const { data } = await api.get<ApiService[]>("services");
-        return [...data]
-          .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
-          .map(toService);
-      } catch {
-        return [];
-      }
-    },
-    retry: false,
-    placeholderData: [],
-  });
+  return useQuery(servicesQueryOptions);
 }

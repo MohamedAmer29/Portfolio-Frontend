@@ -65,15 +65,17 @@ function toSkill(s: ApiSkill): Skill {
   };
 }
 
+export const skillsQueryOptions = {
+  queryKey: ["skills"] as const,
+  queryFn: async () => {
+    const { data } = await api.get<SkillsResponse>("skills");
+    return data.skillsByCategory.flatMap((group) =>
+      group.skills.map(toSkill),
+    );
+  },
+  retry: 1,
+};
+
 export function useSkills() {
-  return useQuery({
-    queryKey: ["skills"],
-    queryFn: async () => {
-      const { data } = await api.get<SkillsResponse>("skills");
-      return data.skillsByCategory.flatMap((group) =>
-        group.skills.map(toSkill),
-      );
-    },
-    retry: 1,
-  });
+  return useQuery(skillsQueryOptions);
 }

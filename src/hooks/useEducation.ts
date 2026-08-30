@@ -39,15 +39,17 @@ export function mapEducation(item: ApiEducation): Education {
   };
 }
 
+export const educationQueryOptions = {
+  queryKey: ["education"] as const,
+  queryFn: async () => {
+    const { data } = await api.get<ApiEducation[]>("education");
+    const entries: Education[] = data.map(mapEducation);
+    const academicFocus = data[0]?.academicFocus ?? [];
+    return { entries, academicFocus } satisfies EducationData;
+  },
+  retry: 1,
+};
+
 export function useEducation() {
-  return useQuery({
-    queryKey: ["education"],
-    queryFn: async () => {
-      const { data } = await api.get<ApiEducation[]>("education");
-      const entries: Education[] = data.map(mapEducation);
-      const academicFocus = data[0]?.academicFocus ?? [];
-      return { entries, academicFocus } satisfies EducationData;
-    },
-    retry: 1,
-  });
+  return useQuery(educationQueryOptions);
 }

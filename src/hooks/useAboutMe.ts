@@ -20,13 +20,15 @@ export interface AboutMeData {
   technologies: AboutTechnology[];
 }
 
+export const aboutMeQueryOptions = {
+  queryKey: ["about-me"] as const,
+  queryFn: async () => {
+    const { data } = await api.get<AboutMeData>("about-me");
+    return data;
+  },
+  retry: 1,
+};
+
 export function useAboutMe() {
-  return useQuery({
-    queryKey: ["about-me"],
-    queryFn: async () => {
-      const { data } = await api.get<AboutMeData>("about-me");
-      return data;
-    },
-    retry: 1,
-  });
+  return useQuery(aboutMeQueryOptions);
 }

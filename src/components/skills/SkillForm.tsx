@@ -371,7 +371,7 @@ export function SkillForm({ initialData, onClose }: SkillFormProps) {
           <button
             type="submit"
             disabled={isSubmitDisabled}
-            className="inline-flex items-center gap-2 rounded-sm border border-accent bg-accent px-5 py-2 font-mono text-[12px] uppercase tracking-[0.1em] text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-sm border border-accent bg-accent px-5 py-2 font-mono text-[12px] uppercase tracking-[0.1em] text-bg transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSubmitting && <Loader2 className="size-3.5 animate-spin" />}
             {isEdit ? "Save Changes" : "Create"}

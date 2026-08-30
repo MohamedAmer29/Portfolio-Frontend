@@ -186,34 +186,47 @@ export function Experience({ jobs }: ExperienceProps) {
   useGSAP(() => {
     const el = tabsRef.current
     if (!el || editMode) return
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const tabs = el.querySelectorAll('[role="tab"]')
-    if (reduced) {
-      gsap.set(tabs, { autoAlpha: 1, y: 0 })
-      return
-    }
-    gsap.from(tabs, {
-      autoAlpha: 0,
-      y: 12,
-      duration: 0.45,
-      stagger: 0.06,
-      ease: 'power2.out',
-    })
+    const ctx = gsap.context(() => {
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      const tabs = el.querySelectorAll('[role="tab"]')
+      if (reduced) {
+        gsap.set(tabs, { autoAlpha: 1, y: 0 })
+        return
+      }
+      gsap.fromTo(
+        tabs,
+        { autoAlpha: 0, y: 12 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.45,
+          stagger: 0.06,
+          ease: 'power2.out',
+          clearProps: 'all',
+        },
+      )
+    }, el)
+    return () => ctx.revert()
   }, [editMode])
 
   useGSAP(() => {
-    if (!panelRef.current || editMode) return
-    gsap.fromTo(
-      panelRef.current.children,
-      { autoAlpha: 0, y: 15 },
-      {
-        autoAlpha: 1,
-        y: 0,
-        duration: 0.4,
-        stagger: 0.06,
-        ease: 'power2.out',
-      },
-    )
+    const panel = panelRef.current
+    if (!panel || editMode) return
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        panel.children,
+        { autoAlpha: 0, y: 15 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.4,
+          stagger: 0.06,
+          ease: 'power2.out',
+          clearProps: 'all',
+        },
+      )
+    }, panel)
+    return () => ctx.revert()
   }, [safeActive, editMode])
 
   return (
@@ -427,14 +440,14 @@ export function Experience({ jobs }: ExperienceProps) {
                   ) : (
                     <>
                       <div className="mb-2 flex items-start justify-between gap-3">
-                        <h3 className="font-sans text-[1.25rem] font-bold text-ink">
+                        <h3 className="font-sans text-[1.25rem] font-bold text-ink tracking-wide">
                           {job.title}{' '}
                           {job.url ? (
                             <a
                               href={job.url}
                               target="_blank"
                               rel="noreferrer"
-                              className="text-accent transition-colors duration-200 hover:underline decoration-accent/40 underline-offset-4"
+                              className="text-accent tracking-wide transition-colors duration-200 hover:underline decoration-accent/40 underline-offset-4"
                             >
                               @ {job.company}
                             </a>
@@ -443,12 +456,12 @@ export function Experience({ jobs }: ExperienceProps) {
                           )}
                         </h3>
                       </div>
-                      <p className="mb-6 font-mono text-[13px] text-ink-soft">{job.range}</p>
+                      <p className="mb-6 font-mono text-[13px] tracking-wide text-ink-soft">{job.range}</p>
                       <ul className="space-y-4">
                         {job.bullets.map((bullet, bulletIndex) => (
                           <li
                             key={`${bullet}-${bulletIndex}`}
-                            className="relative max-w-[580px] pl-5 text-[17px] leading-[1.75] text-ink-muted before:absolute before:left-0 before:top-[9px] before:text-[11px] before:text-accent before:content-['▸'] md:text-body"
+                            className="relative max-w-[580px] pl-5 text-[17px] leading-[1.8] tracking-wide text-ink-muted before:absolute before:left-0 before:top-[9px] before:text-[11px] before:text-accent before:content-['▸'] md:text-body"
                           >
                             {bullet}
                           </li>

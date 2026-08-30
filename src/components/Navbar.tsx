@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { motion, type Variants } from "framer-motion";
 import { Logo } from "./Logo";
 import { ThemeIcon } from "./ThemeIcon";
@@ -24,7 +25,7 @@ const navContainerVariants: Variants = {
 };
 
 const navItemVariants: Variants = {
-  hidden: { opacity: 0, y: 8 },
+  hidden: { y: 8 },
   show: {
     opacity: 1,
     y: 0,
@@ -37,7 +38,6 @@ const navItemVariants: Variants = {
 
 type NavbarProps = {
   letter: string;
-  resumeUrl: string;
   activeSection: string;
   dark: boolean;
   onToggleTheme: () => void;
@@ -46,7 +46,6 @@ type NavbarProps = {
 
 export function Navbar({
   letter,
-  resumeUrl,
   activeSection,
   dark,
   onToggleTheme,
@@ -56,6 +55,8 @@ export function Navbar({
   const [open, setOpen] = useState(false);
   const fallbackLogoRef = useRef<HTMLAnchorElement>(null);
   const resolvedLogoRef = logoAnchorRef ?? fallbackLogoRef;
+  const { pathname } = useLocation();
+  const isResumePage = pathname === "/resume";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -85,7 +86,7 @@ export function Navbar({
             : "bg-bg/10"
         }`}
       >
-        <Logo letter={letter} ref={resolvedLogoRef} />
+        <Logo letter={letter} ref={resolvedLogoRef} to={isResumePage ? "/" : undefined} />
 
         <motion.div
           variants={navContainerVariants}
@@ -93,7 +94,8 @@ export function Navbar({
           animate="show"
           className="hidden items-center gap-7 md:flex"
         >
-          {links.map((link) => {
+          {!isResumePage &&
+            links.map((link) => {
             const isActive = link.href === `#${activeSection}`;
             return (
               <motion.a
@@ -101,7 +103,7 @@ export function Navbar({
                 href={link.href}
                 variants={navItemVariants}
                 data-entrance-nav
-                className={`font-mono text-nav tracking-wide transition ${isActive ? "text-accent" : "text-ink hover:text-accent"}`}
+                className={`font-mono text-nav tracking-[0.12em] transition ${isActive ? "text-accent" : "text-ink hover:text-accent"}`}
               >
                 <span
                   className={`mr-1 ${isActive ? "text-accent" : "text-ink-soft"}`}
@@ -112,16 +114,17 @@ export function Navbar({
               </motion.a>
             );
           })}
-          <motion.a
-            href={resumeUrl}
-            target="_blank"
-            rel="noreferrer"
-            variants={navItemVariants}
+          <NavLink
+            to="/resume"
             data-entrance-cta
-            className="ml-3 inline-flex items-center justify-center rounded border border-ink px-[1.1rem] py-[0.55rem] font-mono text-nav tracking-wide text-ink transition hover:border-accent hover:bg-accent/20"
+            className={({ isActive }) =>
+              `ml-3 inline-flex items-center justify-center rounded border border-ink px-[1.1rem] py-[0.55rem] font-mono text-nav tracking-[0.12em] text-ink transition hover:border-accent hover:bg-accent/20 ${
+                isActive ? "border-accent text-accent" : ""
+              }`
+            }
           >
             Resume
-          </motion.a>
+          </NavLink>
           <motion.button
             type="button"
             onClick={onToggleTheme}
@@ -173,20 +176,22 @@ export function Navbar({
       />
 
       <aside
+        inert={!open}
+        aria-hidden={!open}
         className={`fixed bottom-0 right-0 top-0 z-[99] grid w-[min(75vw,320px)] place-items-center bg-bg shadow-[-12px_0_40px_rgba(26,31,36,0.08)] transition duration-300 md:hidden ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
-        {...(!open ? { "aria-hidden": "true" } : {})}
       >
         <nav className="flex flex-col items-center gap-6">
-          {links.map((link) => {
+          {!isResumePage &&
+            links.map((link) => {
             const isActive = link.href === `#${activeSection}`;
             return (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={close}
-                className={`font-mono text-[15px] tracking-wide transition ${isActive ? "text-accent" : "text-ink hover:text-accent"}`}
+                className={`font-mono text-[15px] tracking-[0.12em] transition ${isActive ? "text-accent" : "text-ink hover:text-accent"}`}
               >
                 <span
                   className={`mr-1 ${isActive ? "text-accent" : "text-ink-soft"}`}
@@ -197,15 +202,17 @@ export function Navbar({
               </a>
             );
           })}
-          <a
-            href={resumeUrl}
-            target="_blank"
-            rel="noreferrer"
-            onClick={close}
-            className="inline-flex items-center justify-center rounded border border-ink px-[1.1rem] py-[0.55rem] font-mono text-nav tracking-wide transition hover:border-accent hover:bg-accent/20"
-          >
-            Resume
-          </a>
+           <NavLink
+             to="/resume"
+             onClick={close}
+             className={({ isActive }) =>
+               `inline-flex items-center justify-center rounded border border-ink px-[1.1rem] py-[0.55rem] font-mono text-nav tracking-wide transition hover:border-accent hover:bg-accent/20 ${
+                 isActive ? "border-accent text-accent" : ""
+               }`
+             }
+           >
+             Resume
+           </NavLink>
           <button
             type="button"
             onClick={onToggleTheme}

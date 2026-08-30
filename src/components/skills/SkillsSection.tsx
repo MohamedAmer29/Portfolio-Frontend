@@ -22,7 +22,29 @@ import { SkillsMobileList } from "./SkillsMobileList";
 import { SkillForm } from "./SkillForm";
 import { SkillsManager } from "./SkillsManager";
 
+const TWO_CIRCLE_THRESHOLD = 25;
+
 function getNodePositions(count: number, radius: number) {
+  if (count > TWO_CIRCLE_THRESHOLD) {
+    const firstCount = TWO_CIRCLE_THRESHOLD;
+    const secondCount = count - firstCount;
+    const ringRadiusFor = (n: number) => Math.min(280, Math.max(170, n * 11));
+    const radii = [ringRadiusFor(firstCount), ringRadiusFor(secondCount)];
+    const centerOffset = Math.min(190, 380 - Math.max(...radii) - 20);
+    const positions: { x: number; y: number }[] = [];
+    const groups = [firstCount, secondCount];
+    groups.forEach((n, gi) => {
+      const cx = gi === 0 ? -centerOffset : centerOffset;
+      for (let i = 0; i < n; i++) {
+        const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+        positions.push({
+          x: Math.cos(angle) * radii[gi] + cx,
+          y: Math.sin(angle) * radii[gi],
+        });
+      }
+    });
+    return positions;
+  }
   const positions: { x: number; y: number }[] = [];
   for (let i = 0; i < count; i++) {
     const angle = (i / count) * Math.PI * 2 - Math.PI / 2;
@@ -207,7 +229,9 @@ All
                 {querySkills.length}
               </span>
             </button>
-            {categoryStats.map((cat) => (
+            {categoryStats
+              .filter((cat) => cat.count > 0)
+              .map((cat) => (
               <button
                 key={cat.id}
                 type="button"
@@ -254,22 +278,20 @@ All
 
         <Reveal delay={0.12}>
           <div className="relative hidden md:block">
-            <div className="flex gap-8">
-              <div className="relative flex-1">
-                <SkillsNetwork
-                  filteredSkills={filteredSkills}
-                  positions={positions}
-                  connections={connections}
-                  focusedSkill={focusedSkill}
-                  isRelated={isRelated}
-                  onSkillInteract={handleSkillInteract}
-                  onSkillClick={handleSkillClick}
-                  networkRef={networkRef}
-                  nodesRef={nodesRef}
-                />
-              </div>
+            <SkillsNetwork
+              filteredSkills={filteredSkills}
+              positions={positions}
+              connections={connections}
+              focusedSkill={focusedSkill}
+              isRelated={isRelated}
+              onSkillInteract={handleSkillInteract}
+              onSkillClick={handleSkillClick}
+              networkRef={networkRef}
+              nodesRef={nodesRef}
+            />
 
-              <div className="hidden w-[260px] shrink-0 lg:block">
+            <div className="pointer-events-none absolute right-0 top-1/2 hidden w-[260px] -translate-y-1/2 lg:block">
+              <div className="pointer-events-auto">
                 <SkillsInfoPanel focusedSkill={focusedSkill} />
               </div>
             </div>

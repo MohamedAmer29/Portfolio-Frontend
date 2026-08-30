@@ -149,7 +149,7 @@ export function ServicesSection() {
         )}
 
         <Reveal delay={0.05}>
-          <p className="mx-auto mb-10 max-w-[520px] text-[17px] leading-[1.8] text-ink-muted md:text-body">
+          <p className="mx-auto mb-10 max-w-[520px] text-[17px] leading-[1.8] tracking-wide text-ink-muted md:text-body">
             What I can build for you.
           </p>
         </Reveal>

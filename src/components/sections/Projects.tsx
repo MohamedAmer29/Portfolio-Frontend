@@ -15,6 +15,7 @@ import {
 } from '../../hooks/useProjectsMutations'
 import { useAuth } from '../../hooks/useAuth'
 import { useDebouncedCallback } from '../../lib/useDebouncedCallback'
+import { useSmartImage } from '../../hooks/useSmartImage'
 
 export type Project = {
   id?: string
@@ -56,6 +57,68 @@ function IconExternal() {
       <polyline points="15 3 21 3 21 9" />
       <line x1="10" y1="14" x2="21" y2="3" />
     </svg>
+  )
+}
+
+const fallbackProjectBg =
+  'grid size-full place-items-center bg-[radial-gradient(circle_at_20%_20%,rgba(127,173,173,0.35),transparent_45%),radial-gradient(circle_at_80%_70%,rgba(90,120,140,0.4),transparent_40%),linear-gradient(145deg,#243038,#13181d)] font-mono text-[13px] uppercase tracking-[0.08em]'
+
+function ProjectArtwork({
+  imgSrc,
+  title,
+  imageLabel,
+  mobile = false,
+}: {
+  imgSrc: string | null
+  title: string
+  imageLabel: string
+  mobile?: boolean
+}) {
+  const { loaded, failed, onLoad, onError } = useSmartImage(imgSrc)
+
+  if (!imgSrc || failed) {
+    return (
+      <div
+        className={`${fallbackProjectBg} ${
+          mobile
+            ? 'text-white/35'
+            : 'text-white/40 transition-all duration-500 group-hover:text-white/55'
+        }`}
+      >
+        {imageLabel}
+      </div>
+    )
+  }
+
+  return (
+    <>
+      {!loaded && (
+        <span
+          aria-hidden="true"
+          className="absolute inset-0 z-[1] animate-pulse bg-ink/10"
+        />
+      )}
+      {mobile ? (
+        <motion.img
+          src={imgSrc}
+          alt={title}
+          onLoad={onLoad}
+          onError={onError}
+          initial={{ opacity: 0, scale: 1.05 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        />
+      ) : (
+        <img
+          src={imgSrc}
+          alt={title}
+          onLoad={onLoad}
+          onError={onError}
+          className={loaded ? 'img-fade-in' : undefined}
+        />
+      )}
+    </>
   )
 }
 
@@ -269,22 +332,14 @@ export function Projects({ projects }: ProjectsProps) {
                 {/* Mobile card */}
                 <article className="relative grid min-h-[360px] overflow-hidden bg-project rounded-lg md:hidden">
                   <div className="absolute inset-0">
-                    {imgSrc ? (
-                      <div className="photo-frame photo-frame--project size-full rounded-none">
-                        <motion.img
-                          src={imgSrc}
-                          alt={project.title}
-                          initial={{ opacity: 0, scale: 1.05 }}
-                          whileInView={{ opacity: 1, scale: 1 }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.6 }}
-                        />
-                      </div>
-                    ) : (
-                      <div className="grid size-full place-items-center bg-[radial-gradient(circle_at_20%_20%,rgba(127,173,173,0.35),transparent_45%),radial-gradient(circle_at_80%_70%,rgba(90,120,140,0.4),transparent_40%),linear-gradient(145deg,#243038,#13181d)] font-mono text-[13px] uppercase tracking-[0.08em] text-white/35">
-                        {imageLabel}
-                      </div>
-                    )}
+                    <div className="photo-frame photo-frame--project size-full rounded-none">
+                      <ProjectArtwork
+                        imgSrc={imgSrc}
+                        title={project.title}
+                        imageLabel={imageLabel}
+                        mobile
+                      />
+                    </div>
                   </div>
                   <div className="relative z-[2] flex min-h-[360px] flex-col justify-end gap-3 bg-gradient-to-t from-[#0e1216] via-[#0e1216]/90 to-transparent p-5">
                     <p className="font-mono text-[11px] text-accent">
@@ -339,13 +394,11 @@ export function Projects({ projects }: ProjectsProps) {
                     }`}
                   >
                     <div className="photo-frame photo-frame--project transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:shadow-[0_20px_50px_-20px_rgba(26,31,36,0.4)]">
-                      {imgSrc ? (
-                        <img src={imgSrc} alt={project.title} />
-                      ) : (
-                        <div className="grid size-full place-items-center bg-[radial-gradient(circle_at_20%_20%,rgba(127,173,173,0.35),transparent_45%),radial-gradient(circle_at_80%_70%,rgba(90,120,140,0.4),transparent_40%),linear-gradient(145deg,#243038,#13181d)] font-mono text-[13px] uppercase tracking-[0.08em] text-white/40 transition-all duration-500 group-hover:text-white/55">
-                          {imageLabel}
-                        </div>
-                      )}
+                      <ProjectArtwork
+                        imgSrc={imgSrc}
+                        title={project.title}
+                        imageLabel={imageLabel}
+                      />
                     </div>
                   </div>
 

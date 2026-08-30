@@ -3,7 +3,7 @@ export const portfolio = {
   fullName: 'Mohamed Amer.',
   logoLetter: 'M',
   email: 'm1o1h1a1a1@gmail.com',
-  resumeUrl: '/resume.pdf',
+  resumeUrl: '/Mohamed_Amer_CV.pdf',
   social: {
     github: 'https://github.com/MohamedAmer29',
     linkedin: 'https://www.linkedin.com/in/mohamed-amer-86631525a/',

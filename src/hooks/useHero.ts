@@ -54,13 +54,15 @@ function normalizeHeroData(data: unknown): HeroData | null {
   return { fullName, bio, description };
 }
 
+export const heroQueryOptions = {
+  queryKey: ["hero"] as const,
+  queryFn: async () => {
+    const { data } = await api.get<unknown>("hero");
+    return normalizeHeroData(data);
+  },
+  retry: 1,
+};
+
 export function useHero() {
-  return useQuery({
-    queryKey: ["hero"],
-    queryFn: async () => {
-      const { data } = await api.get<unknown>("hero");
-      return normalizeHeroData(data);
-    },
-    retry: 1,
-  });
+  return useQuery(heroQueryOptions);
 }

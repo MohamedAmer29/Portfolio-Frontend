@@ -22,31 +22,33 @@ function formatDate(value: string | null | undefined): string {
   return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
 }
 
+export const experienceQueryOptions = {
+  queryKey: ["experience"] as const,
+  queryFn: async () => {
+    const { data } = await api.get<ApiExperience[]>("experience");
+    return data.map(
+      (item): Job => ({
+        id: item.id,
+        company: item.company,
+        title: item.position,
+        range: `${formatDate(item.startDate)} — ${
+          item.isCurrent ? "Present" : formatDate(item.endDate)
+        }`,
+        url: "",
+        bullets: item.description,
+        position: item.position,
+        location: item.location ?? "",
+        employmentType: item.employmentType,
+        startDate: item.startDate,
+        endDate: item.endDate ?? "",
+        isCurrent: item.isCurrent,
+        displayOrder: item.displayOrder,
+      }),
+    );
+  },
+  retry: 1,
+};
+
 export function useExperience() {
-  return useQuery({
-    queryKey: ["experience"],
-    queryFn: async () => {
-      const { data } = await api.get<ApiExperience[]>("experience");
-      return data.map(
-        (item): Job => ({
-          id: item.id,
-          company: item.company,
-          title: item.position,
-          range: `${formatDate(item.startDate)} — ${
-            item.isCurrent ? "Present" : formatDate(item.endDate)
-          }`,
-          url: "",
-          bullets: item.description,
-          position: item.position,
-          location: item.location ?? "",
-          employmentType: item.employmentType,
-          startDate: item.startDate,
-          endDate: item.endDate ?? "",
-          isCurrent: item.isCurrent,
-          displayOrder: item.displayOrder,
-        }),
-      );
-    },
-    retry: 1,
-  });
+  return useQuery(experienceQueryOptions);
 }

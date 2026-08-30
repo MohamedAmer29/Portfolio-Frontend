@@ -9,6 +9,7 @@ import {
 import { Navbar } from "../components/Navbar";
 import { useActiveSection } from "../hooks/useActiveSection";
 import { useDarkMode } from "../hooks/useDarkMode";
+import { usePrefetchContent } from "../hooks/usePrefetchContent";
 import { PageLoader } from "../components/PageLoader";
 import { Sidebars } from "../components/Sidebars";
 import { About } from "../components/sections/About";
@@ -52,6 +53,7 @@ const BlackHoles = lazy(() =>
 );
 
 export function PortfolioPage() {
+  usePrefetchContent();
   const [showMiniGame, setShowMiniGame] = useState(false);
   const [ready, setReady] = useState(false);
   const [pendingMiniGame] = useState(
@@ -149,7 +151,6 @@ export function PortfolioPage() {
           <div>
             <Navbar
               letter={portfolio.logoLetter}
-              resumeUrl={portfolio.resumeUrl}
               activeSection={activeSection}
               dark={dark}
               onToggleTheme={requestToggleTheme}

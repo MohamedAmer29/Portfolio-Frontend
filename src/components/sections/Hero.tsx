@@ -14,7 +14,7 @@ const heroContainerVariants: Variants = {
 };
 
 const heroItemVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { y: 20 },
   show: {
     opacity: 1,
     y: 0,
@@ -158,13 +158,13 @@ export function Hero({ greeting, name, tagline, bio }: HeroProps) {
         animate="show"
         className="mx-auto w-full max-w-[720px] md:w-[min(100%-10rem,1000px)]"
       >
-        <motion.p
-          variants={heroItemVariants}
-          data-entrance-hero={!editMode ? true : undefined}
-          className="mb-3 font-mono text-[13px] tracking-wide text-accent md:mb-5 md:text-[14px]"
-        >
-          {greeting}
-        </motion.p>
+            <motion.p
+              variants={heroItemVariants}
+              data-entrance-hero={!editMode ? true : undefined}
+              className="mb-3 font-mono text-[13px] tracking-[0.15em] text-accent md:mb-5 md:text-[14px]"
+            >
+              {greeting}
+            </motion.p>
 
         {editMode ? (
           <div className="space-y-4 opacity-100">
@@ -214,7 +214,7 @@ export function Hero({ greeting, name, tagline, bio }: HeroProps) {
             <motion.p
               variants={heroItemVariants}
               data-entrance-hero
-              className="max-w-[34rem] text-[15px] leading-[1.7] text-ink-muted md:text-body lg:max-w-[40rem]"
+              className="max-w-[34rem] text-[15px] leading-[1.8] tracking-wide text-ink-muted md:text-body lg:max-w-[40rem]"
             >
               {resolved.description}
             </motion.p>
