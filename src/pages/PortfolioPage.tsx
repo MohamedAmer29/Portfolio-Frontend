@@ -111,20 +111,9 @@ export function PortfolioPage() {
   useEffect(() => {
     if (!ready) return;
     const mq = window.matchMedia("(min-width: 1024px)");
-    if (!mq.matches) return;
     const mountScrollCar = () => setShowScrollCar(true);
-    const ric = (window as unknown as {
-      requestIdleCallback?(
-        cb: () => void,
-        options?: { timeout?: number },
-      ): number;
-      cancelIdleCallback?(id: number): void;
-    });
-    if (ric.requestIdleCallback) {
-      const id = ric.requestIdleCallback(mountScrollCar, { timeout: 2500 });
-      return () => ric.cancelIdleCallback?.(id);
-    }
-    const id = window.setTimeout(mountScrollCar, 1200);
+    if (!mq.matches) return;
+    const id = window.setTimeout(mountScrollCar, 700);
     return () => window.clearTimeout(id);
   }, [ready]);
 
