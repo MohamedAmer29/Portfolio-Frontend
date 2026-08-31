@@ -66,11 +66,13 @@ const fallbackProjectBg =
 
 function ProjectArtwork({
   imgSrc,
+  imgSrcSet,
   title,
   imageLabel,
   mobile = false,
 }: {
   imgSrc: string | null
+  imgSrcSet?: string
   title: string
   imageLabel: string
   mobile?: boolean
@@ -102,6 +104,8 @@ function ProjectArtwork({
       {mobile ? (
         <motion.img
           src={imgSrc}
+          srcSet={imgSrcSet}
+          sizes="(min-width: 768px) 600px, 100vw"
           alt={title}
           loading="lazy"
           decoding="async"
@@ -115,6 +119,8 @@ function ProjectArtwork({
       ) : (
         <img
           src={imgSrc}
+          srcSet={imgSrcSet}
+          sizes="(min-width: 1024px) 1100px, (min-width: 768px) 700px, 100vw"
           alt={title}
           loading="lazy"
           decoding="async"
@@ -318,6 +324,10 @@ export function Projects({ projects }: ProjectsProps) {
               project.image && project.image.startsWith('http')
                 ? optimizeCloudinaryUrl(project.image, 1200)
                 : null
+            const imgSrcSet =
+              imgSrc && project.image
+                ? `${optimizeCloudinaryUrl(project.image, 800)} 800w, ${optimizeCloudinaryUrl(project.image, 1200)} 1200w`
+                : undefined
             const imageLabel = project.image ?? project.status ?? ''
             const techItems =
               project.technologies && project.technologies.length > 0
@@ -345,6 +355,7 @@ export function Projects({ projects }: ProjectsProps) {
                     <div className="photo-frame photo-frame--project size-full rounded-none">
                       <ProjectArtwork
                         imgSrc={imgSrc}
+                        imgSrcSet={imgSrcSet}
                         title={project.title}
                         imageLabel={imageLabel}
                         mobile
@@ -406,6 +417,7 @@ export function Projects({ projects }: ProjectsProps) {
                     <div className="photo-frame photo-frame--project transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:shadow-[0_20px_50px_-20px_rgba(26,31,36,0.4)]">
                       <ProjectArtwork
                         imgSrc={imgSrc}
+                        imgSrcSet={imgSrcSet}
                         title={project.title}
                         imageLabel={imageLabel}
                       />

@@ -23,6 +23,7 @@ const resumeData = {
   contact: {
     phone: "01009487734",
     email: "mohamed1amer0@gmail.com",
+    portfolio: "https://mohamedamer29.vercel.app",
     linkedin: "https://linkedin.com/in/mohamed-amer-86631525a",
     github: "https://github.com/MohamedAmer29",
   },
@@ -72,7 +73,8 @@ const resumeData = {
         "Developed a full-stack Employee Management System supporting 3 user roles and 20+ core administrative features using React, NestJS, PostgreSQL, Redis, and Docker.",
         "Implemented JWT authentication, role-based authorization across 3 user roles, 140+ RESTful APIs, automated attendance processing, dashboard analytics, notifications, and audit logging, with PostgreSQL for data management and Redis for caching.",
       ],
-      github: "https://github.com/MohamedAmer29/Employee-Management-System-FrontEnd",
+      github:
+        "https://github.com/MohamedAmer29/Employee-Management-System-FrontEnd",
     },
     {
       name: "Portfolio",
@@ -107,9 +109,12 @@ const resumeData = {
     },
   ],
   skills: {
-    frontend: "React.js, Styled Components, CSS, HTML, TS, JS, Tailwind, Redux, Tanstack, Three.js, React Three Fiber",
-    backend: "Node.js, NestJS, Express, TypeORM, MongoDB, PostgreSQL, REST API, MySQL, Firebase, Redis",
-    others: "Docker, Postman, Swagger, JWT, RBAC, API Integration, Framer Motion, GitHub, System Design, Agile, Git",
+    frontend:
+      "React.js, Styled Components, CSS, HTML, TS, JS, Tailwind, Redux, Tanstack, Three.js, React Three Fiber",
+    backend:
+      "Node.js, NestJS, Express, TypeORM, MongoDB, PostgreSQL, REST API, MySQL, Firebase, Redis",
+    others:
+      "Docker, Postman, Swagger, JWT, RBAC, API Integration, Framer Motion, GitHub, System Design, Agile, Git",
     core: "API Integration, Database Design, Security Best Practices, Performance Optimization",
   },
   education: {
@@ -122,7 +127,14 @@ const resumeData = {
 
 function IconPhone() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-3.5 shrink-0" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className="size-3.5 shrink-0"
+      aria-hidden="true"
+    >
       <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
     </svg>
   );
@@ -130,7 +142,14 @@ function IconPhone() {
 
 function IconMail() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-3.5 shrink-0" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className="size-3.5 shrink-0"
+      aria-hidden="true"
+    >
       <rect x="2" y="4" width="20" height="16" rx="2" />
       <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
     </svg>
@@ -139,7 +158,14 @@ function IconMail() {
 
 function IconLinkedIn() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-3.5 shrink-0" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className="size-3.5 shrink-0"
+      aria-hidden="true"
+    >
       <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
       <rect x="2" y="9" width="4" height="12" />
       <circle cx="4" cy="4" r="2" />
@@ -149,20 +175,48 @@ function IconLinkedIn() {
 
 function IconGithub() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-3.5 shrink-0" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className="size-3.5 shrink-0"
+      aria-hidden="true"
+    >
       <path d="M9 19c-4.3 1.4-4.3-2.1-6-2.5m12 5v-3.4c0-.9-.3-1.6-.8-2 2.8-.3 5.7-1.4 5.7-6.2 0-1.4-.5-2.5-1.3-3.4.1-.3.6-1.7-.1-3.4 0 0-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.8 2.5 5.7 2.8 5.7 2.8c-.7 1.7-.2 3.1-.1 3.4-.8.9-1.3 2-1.3 3.4 0 4.8 2.9 5.9 5.7 6.2-.4.3-.7.9-.8 1.7V22" />
     </svg>
   );
 }
 
+function IconGlobe() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className="size-3.5 shrink-0"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="M2 12h20" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    </svg>
+  );
+}
+
 const ContactIcon = ({ children }: { children: React.ReactNode }) => (
-  <span className="grid size-4 place-items-center text-ink-muted">{children}</span>
+  <span className="grid size-4 place-items-center text-ink-muted">
+    {children}
+  </span>
 );
 
 function AccentHeading({ first, rest }: { first: string; rest: string }) {
   return (
     <h2 className="mb-7 flex items-center gap-4 font-sans text-section font-bold text-ink md:mb-10">
-      <span className="shrink-0 font-mono text-[0.85em] font-medium text-ink-muted">01.</span>
+      <span className="shrink-0 font-mono text-[0.85em] font-medium text-ink-muted">
+        01.
+      </span>
       <span className="shrink-0">
         <span className="text-accent">{first}</span>
         {rest}
@@ -210,23 +264,23 @@ export default function Resume() {
 
       <main className="relative z-10 mx-auto max-w-[1000px] px-5 pt-24 pb-16 md:px-0 md:pt-28 md:pb-20">
         <div className="relative mb-8 flex items-center justify-center">
-            <a
-              href="/"
-              className="absolute left-0 inline-flex items-center justify-center rounded-sm border border-ink/15 px-5 py-2 font-mono text-[12px] uppercase tracking-[0.1em] text-ink/50 transition hover:bg-ink/5 hover:text-ink/70"
-            >
-              ← Return to Portfolio
-            </a>
-            <a
-              href={portfolio.resumeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center rounded-sm border border-accent bg-accent px-5 py-2 font-mono text-[12px] uppercase tracking-[0.1em] text-bg transition hover:opacity-90"
-            >
-              Download CV
-            </a>
-          </div>
+          <a
+            href="/"
+            className="absolute left-0 inline-flex items-center justify-center rounded-sm border border-ink/15 px-5 py-2 font-mono text-[12px] uppercase tracking-[0.1em] text-ink/50 transition hover:bg-ink/5 hover:text-ink/70"
+          >
+            ← Return to Portfolio
+          </a>
+          <a
+            href={portfolio.resumeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center rounded-sm border border-accent bg-accent px-5 py-2 font-mono text-[12px] uppercase tracking-[0.1em] text-bg transition hover:opacity-90"
+          >
+            Download CV
+          </a>
+        </div>
 
-          <div className="resume-card mx-auto rounded-xl bg-white p-6 shadow-[0_20px_60px_rgba(0,0,0,0.12)] md:p-8 lg:p-10">
+        <div className="resume-card mx-auto rounded-xl bg-white p-6 shadow-[0_20px_60px_rgba(0,0,0,0.12)] md:p-8 lg:p-10">
           <header className="mb-8 text-center">
             <h1 className="mb-1 font-sans text-[clamp(2rem,5vw,3rem)] font-extrabold tracking-[-0.03em] text-ink">
               <span className="font-light">{resumeData.firstName}</span>{" "}
@@ -240,7 +294,9 @@ export default function Resume() {
             </p>
             <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-mono text-[12px] text-ink-soft">
               <span className="inline-flex items-center gap-1.5">
-                <ContactIcon><IconPhone /></ContactIcon>
+                <ContactIcon>
+                  <IconPhone />
+                </ContactIcon>
                 <a
                   href="https://wa.me/+201009487734"
                   target="_blank"
@@ -252,7 +308,9 @@ export default function Resume() {
               </span>
               <span className="hidden sm:inline text-ink-soft/50">|</span>
               <span className="inline-flex items-center gap-1.5">
-                <ContactIcon><IconMail /></ContactIcon>
+                <ContactIcon>
+                  <IconMail />
+                </ContactIcon>
                 <a
                   href={`mailto:${resumeData.contact.email}`}
                   className="transition-colors hover:text-accent"
@@ -262,7 +320,23 @@ export default function Resume() {
               </span>
               <span className="hidden sm:inline text-ink-soft/50">|</span>
               <span className="inline-flex items-center gap-1.5">
-                <ContactIcon><IconLinkedIn /></ContactIcon>
+                <ContactIcon>
+                  <IconGlobe />
+                </ContactIcon>
+                <a
+                  href={resumeData.contact.portfolio}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition-colors hover:text-accent"
+                >
+                  Portfolio
+                </a>
+              </span>
+              <span className="hidden sm:inline text-ink-soft/50">|</span>
+              <span className="inline-flex items-center gap-1.5">
+                <ContactIcon>
+                  <IconLinkedIn />
+                </ContactIcon>
                 <a
                   href={resumeData.contact.linkedin}
                   target="_blank"
@@ -274,7 +348,9 @@ export default function Resume() {
               </span>
               <span className="hidden sm:inline text-ink-soft/50">|</span>
               <span className="inline-flex items-center gap-1.5">
-                <ContactIcon><IconGithub /></ContactIcon>
+                <ContactIcon>
+                  <IconGithub />
+                </ContactIcon>
                 <a
                   href={resumeData.contact.github}
                   target="_blank"
@@ -287,7 +363,7 @@ export default function Resume() {
             </div>
           </header>
 
-              {resumeData.summary && (
+          {resumeData.summary && (
             <p className="mb-8 text-center text-[15px] leading-[1.8] tracking-wide text-ink-muted">
               {resumeData.summary}
             </p>
@@ -303,16 +379,23 @@ export default function Resume() {
                 <div className="mb-1 flex flex-col sm:flex-row sm:items-baseline sm:justify-between">
                   <span className="font-bold text-ink">{job.company}</span>
                   {job.location && (
-                    <span className="italic text-accent sm:text-right">{job.location}</span>
+                    <span className="italic text-accent sm:text-right">
+                      {job.location}
+                    </span>
                   )}
                 </div>
                 <div className="mb-2 flex flex-col sm:flex-row sm:items-baseline sm:justify-between">
                   <span className="text-ink">{job.title}</span>
-                  <span className="italic text-ink-muted sm:text-right">{job.range}</span>
+                  <span className="italic text-ink-muted sm:text-right">
+                    {job.range}
+                  </span>
                 </div>
                 <ul className="space-y-2">
                   {job.achievements.map((a, j) => (
-                    <li key={j} className="relative pl-4 text-[15px] leading-[1.8] tracking-wide text-ink-muted before:absolute before:left-0 before:top-[7px] before:text-accent before:content-['▸']">
+                    <li
+                      key={j}
+                      className="relative pl-4 text-[15px] leading-[1.8] tracking-wide text-ink-muted before:absolute before:left-0 before:top-[7px] before:text-accent before:content-['▸']"
+                    >
                       {a}
                     </li>
                   ))}
@@ -328,7 +411,9 @@ export default function Resume() {
               <div key={i} className="mb-6 last:mb-0">
                 <div className="mb-1 flex flex-col sm:flex-row sm:items-baseline sm:justify-between">
                   <span className="font-bold text-ink">{proj.name}</span>
-                  <span className="italic text-accent sm:text-right">{proj.tech}</span>
+                  <span className="italic text-accent sm:text-right">
+                    {proj.tech}
+                  </span>
                 </div>
                 <div className="mb-2 flex flex-col sm:flex-row sm:items-baseline sm:justify-between">
                   <span className="text-ink" />
@@ -343,7 +428,10 @@ export default function Resume() {
                 </div>
                 <ul className="space-y-1">
                   {proj.details.map((d, j) => (
-                    <li key={j} className="relative pl-4 text-[15px] leading-[1.8] tracking-wide text-ink-muted before:absolute before:left-0 before:top-[7px] before:text-accent before:content-['▸']">
+                    <li
+                      key={j}
+                      className="relative pl-4 text-[15px] leading-[1.8] tracking-wide text-ink-muted before:absolute before:left-0 before:top-[7px] before:text-accent before:content-['▸']"
+                    >
                       {d}
                     </li>
                   ))}
@@ -358,13 +446,23 @@ export default function Resume() {
             <div className="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
               {[
                 { label: "Frontend", values: resumeData.skills.frontend },
-                { label: "Backend & Databases", values: resumeData.skills.backend },
+                {
+                  label: "Backend & Databases",
+                  values: resumeData.skills.backend,
+                },
                 { label: "Others", values: resumeData.skills.others },
                 { label: "Core Competencies", values: resumeData.skills.core },
               ].map((cat, i) => (
-                <div key={i} className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 sm:gap-2">
-                  <span className="font-bold text-ink tracking-wide">{cat.label}:</span>
-                  <span className="text-[15px] tracking-wide text-ink-muted">{cat.values}</span>
+                <div
+                  key={i}
+                  className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 sm:gap-2"
+                >
+                  <span className="font-bold text-ink tracking-wide">
+                    {cat.label}:
+                  </span>
+                  <span className="text-[15px] tracking-wide text-ink-muted">
+                    {cat.values}
+                  </span>
                 </div>
               ))}
             </div>
@@ -374,12 +472,18 @@ export default function Resume() {
             <AccentHeading first="Edu" rest="cation" />
 
             <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between">
-              <span className="font-bold text-ink tracking-wide">{resumeData.education.institution}</span>
-              <span className="italic text-accent sm:text-right tracking-wide">{resumeData.education.location}</span>
+              <span className="font-bold text-ink tracking-wide">
+                {resumeData.education.institution}
+              </span>
+              <span className="italic text-accent sm:text-right tracking-wide">
+                {resumeData.education.location}
+              </span>
             </div>
             <div className="mb-3 flex flex-col sm:flex-row sm:items-baseline sm:justify-between">
               <span className="text-ink">{resumeData.education.program}</span>
-              <span className="italic text-ink-muted sm:text-right">{resumeData.education.range}</span>
+              <span className="italic text-ink-muted sm:text-right">
+                {resumeData.education.range}
+              </span>
             </div>
           </section>
         </div>

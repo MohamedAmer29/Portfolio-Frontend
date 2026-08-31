@@ -60,6 +60,11 @@ export function PortfolioPage() {
     () => !localStorage.getItem("hasSeenMiniGame"),
   );
   const [showLoader, setShowLoader] = useState(() => !pendingMiniGame);
+  const [loaderFast] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(max-width: 1023px)").matches,
+  );
   const [carShouldAnimate, setCarShouldAnimate] = useState(false);
   const [eclipseTarget, setEclipseTarget] = useState<boolean | null>(null);
   const [showScrollCar, setShowScrollCar] = useState(false);
@@ -140,6 +145,7 @@ export function PortfolioPage() {
         <PageLoader
           letter={portfolio.logoLetter}
           onComplete={onLoaderComplete}
+          fast={loaderFast}
         />
       ) : null}
 
