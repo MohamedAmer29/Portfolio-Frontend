@@ -132,7 +132,7 @@ export function ServicesSection() {
       <div className="mx-auto w-full max-w-[1000px] md:w-[min(100%-10rem,1000px)]">
         <Reveal>
           <div className="mb-7 flex flex-wrap items-center justify-between gap-4 md:mb-10">
-            <SectionHeading number="06." title="Services" className="mb-0" />
+            <SectionHeading number="02." title="Services" className="mb-0" />
             {isAdmin && (
               <AdminSectionActions
                 section="services"
@@ -184,21 +184,6 @@ export function ServicesSection() {
                 </Reveal>
               ))}
             </div>
-
-            <Reveal delay={0.5}>
-              <div className="mt-12 border-t border-ink/10 pt-10 text-center">
-                <p className="mb-5 font-sans text-[1.5rem] font-bold tracking-[-0.01em] text-ink">
-                  Have a project in mind?
-                </p>
-                <a
-                  href="#contact"
-                  data-cursor="hover"
-                  className="inline-flex items-center justify-center rounded-sm border border-ink bg-white px-8 py-3.5 font-mono text-[12px] uppercase tracking-[0.1em] text-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-accent hover:bg-accent/10 hover:shadow-[0_8px_25px_-10px_rgba(127,173,173,0.35)]"
-                >
-                  Let's Work Together
-                </a>
-              </div>
-            </Reveal>
           </>
         )}
       </div>

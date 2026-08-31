@@ -118,8 +118,10 @@ export function ScrollCar({ shouldAnimate }: { shouldAnimate: boolean }) {
   };
 
   useEffect(() => {
+    let rafId = 0;
+
     const updatePositions = () => {
-      const maxScroll =
+      let maxScroll =
         document.documentElement.scrollHeight - window.innerHeight;
       const currentY = window.scrollY;
 
@@ -133,7 +135,7 @@ export function ScrollCar({ shouldAnimate }: { shouldAnimate: boolean }) {
           // Anchor the station to the section's center so the car sits at the
           // stop while that section is in view, not only when its top hits the
           // top of the viewport.
-          const elementCenter = elementTop + el.offsetHeight / 2;
+          const elementCenter = elementTop + rect.height / 2;
           progress = THREE.MathUtils.clamp(
             (elementCenter - window.innerHeight / 2) / maxScroll,
             0,
@@ -184,12 +186,18 @@ export function ScrollCar({ shouldAnimate }: { shouldAnimate: boolean }) {
       }
     };
 
+    const scheduleUpdate = () => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(updatePositions);
+    };
+
     updatePositions();
-    window.addEventListener("scroll", updatePositions, { passive: true });
-    window.addEventListener("resize", updatePositions);
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
     return () => {
-      window.removeEventListener("scroll", updatePositions);
-      window.removeEventListener("resize", updatePositions);
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
       if (carHonkAudioRef.current) {
         carHonkAudioRef.current.pause();
         carHonkAudioRef.current = null;

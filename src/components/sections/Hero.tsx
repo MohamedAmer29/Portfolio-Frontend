@@ -8,7 +8,7 @@ const heroContainerVariants: Variants = {
   show: {
     transition: {
       staggerChildren: 0.12,
-      delayChildren: 0.35,
+      delayChildren: 0.15,
     },
   },
 };

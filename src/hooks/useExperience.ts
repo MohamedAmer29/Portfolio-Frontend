@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../lib/api";
 import type { Job } from "../components/sections/Experience";
+import { fallbackExperience } from "../data/fallbackData";
 
 interface ApiExperience {
   id: string;
@@ -25,26 +26,30 @@ function formatDate(value: string | null | undefined): string {
 export const experienceQueryOptions = {
   queryKey: ["experience"] as const,
   queryFn: async () => {
-    const { data } = await api.get<ApiExperience[]>("experience");
-    return data.map(
-      (item): Job => ({
-        id: item.id,
-        company: item.company,
-        title: item.position,
-        range: `${formatDate(item.startDate)} — ${
-          item.isCurrent ? "Present" : formatDate(item.endDate)
-        }`,
-        url: "",
-        bullets: item.description,
-        position: item.position,
-        location: item.location ?? "",
-        employmentType: item.employmentType,
-        startDate: item.startDate,
-        endDate: item.endDate ?? "",
-        isCurrent: item.isCurrent,
-        displayOrder: item.displayOrder,
-      }),
-    );
+    try {
+      const { data } = await api.get<ApiExperience[]>("experience");
+      return data.map(
+        (item): Job => ({
+          id: item.id,
+          company: item.company,
+          title: item.position,
+          range: `${formatDate(item.startDate)} \u2014 ${
+            item.isCurrent ? "Present" : formatDate(item.endDate)
+          }`,
+          url: "",
+          bullets: item.description,
+          position: item.position,
+          location: item.location ?? "",
+          employmentType: item.employmentType,
+          startDate: item.startDate,
+          endDate: item.endDate ?? "",
+          isCurrent: item.isCurrent,
+          displayOrder: item.displayOrder,
+        }),
+      );
+    } catch {
+      return fallbackExperience;
+    }
   },
   retry: 1,
 };

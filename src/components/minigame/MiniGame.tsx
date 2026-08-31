@@ -191,8 +191,8 @@ export function MiniGame({ onComplete }: { onComplete: () => void }) {
             Welcome
           </p>
           <h1 className="text-4xl lg:text-5xl font-bold text-ink leading-tight mb-4">
-            Mohamed Amer
-          </h1>
+              Mohamed Amer.
+            </h1>
           <p className="text-lg text-ink/60 mb-6">
             I build things for the web.
           </p>
@@ -211,6 +211,7 @@ export function MiniGame({ onComplete }: { onComplete: () => void }) {
               "PostgreSQL",
               "MongoDB",
               "Prisma",
+              "Tailwind CSS",
             ].map((tech) => (
               <span
                 key={tech}

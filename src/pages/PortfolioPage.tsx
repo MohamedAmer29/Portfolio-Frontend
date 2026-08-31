@@ -62,14 +62,15 @@ export function PortfolioPage() {
   const [showLoader, setShowLoader] = useState(() => !pendingMiniGame);
   const [carShouldAnimate, setCarShouldAnimate] = useState(false);
   const [eclipseTarget, setEclipseTarget] = useState<boolean | null>(null);
+  const [showScrollCar, setShowScrollCar] = useState(false);
   const logoAnchorRef = useRef<HTMLAnchorElement>(null);
   const activeSection = useActiveSection([
     "about",
+    "services",
+    "work",
+    "experience",
     "skills",
     "education",
-    "experience",
-    "work",
-    "services",
     "contact",
   ]);
   const [dark, setDark] = useDarkMode();
@@ -78,7 +79,11 @@ export function PortfolioPage() {
     if (pendingMiniGame) {
       const chunk = import("../components/minigame/index");
       chunk
-        .then(() => setShowMiniGame(true))
+        .then(() => {
+          setShowMiniGame(true);
+          setReady(true);
+          setShowLoader(false);
+        })
         .catch(() => {
           setShowLoader(true);
         });
@@ -88,7 +93,6 @@ export function PortfolioPage() {
   const onMiniGameComplete = useCallback(() => {
     localStorage.setItem("hasSeenMiniGame", "true");
     setShowMiniGame(false);
-    setShowLoader(true);
   }, []);
 
   const onLoaderComplete = useCallback(() => {
@@ -102,6 +106,26 @@ export function PortfolioPage() {
       setCarShouldAnimate(true);
     }, 400);
     return () => window.clearTimeout(timer);
+  }, [ready]);
+
+  useEffect(() => {
+    if (!ready) return;
+    const mq = window.matchMedia("(min-width: 1024px)");
+    if (!mq.matches) return;
+    const mountScrollCar = () => setShowScrollCar(true);
+    const ric = (window as unknown as {
+      requestIdleCallback?(
+        cb: () => void,
+        options?: { timeout?: number },
+      ): number;
+      cancelIdleCallback?(id: number): void;
+    });
+    if (ric.requestIdleCallback) {
+      const id = ric.requestIdleCallback(mountScrollCar, { timeout: 2500 });
+      return () => ric.cancelIdleCallback?.(id);
+    }
+    const id = window.setTimeout(mountScrollCar, 1200);
+    return () => window.clearTimeout(id);
   }, [ready]);
 
   const requestToggleTheme = useCallback(() => {
@@ -163,9 +187,11 @@ export function PortfolioPage() {
               phone={portfolio.social.phone}
             />
 
-            <Suspense fallback={null}>
-              <ScrollCar shouldAnimate={carShouldAnimate} />
-            </Suspense>
+            {showScrollCar && (
+              <Suspense fallback={null}>
+                <ScrollCar shouldAnimate={carShouldAnimate} />
+              </Suspense>
+            )}
 
             <main>
               <Hero
@@ -180,11 +206,11 @@ export function PortfolioPage() {
                 letter={portfolio.logoLetter}
                 image={heroImg}
               />
+              <ServicesSection />
+              <Projects projects={portfolio.projects} />
+              <Experience jobs={portfolio.experience} />
               <SkillsSection />
               <EducationSection />
-              <Experience jobs={portfolio.experience} />
-              <Projects projects={portfolio.projects} />
-              <ServicesSection />
               <Contact
                 eyebrow={portfolio.contact.eyebrow}
                 title={portfolio.contact.title}

@@ -16,6 +16,7 @@ import {
 import { useAuth } from '../../hooks/useAuth'
 import { useDebouncedCallback } from '../../lib/useDebouncedCallback'
 import { useSmartImage } from '../../hooks/useSmartImage'
+import { optimizeCloudinaryUrl } from '../../lib/cloudinary'
 
 export type Project = {
   id?: string
@@ -102,6 +103,8 @@ function ProjectArtwork({
         <motion.img
           src={imgSrc}
           alt={title}
+          loading="lazy"
+          decoding="async"
           onLoad={onLoad}
           onError={onError}
           initial={{ opacity: 0, scale: 1.05 }}
@@ -113,6 +116,8 @@ function ProjectArtwork({
         <img
           src={imgSrc}
           alt={title}
+          loading="lazy"
+          decoding="async"
           onLoad={onLoad}
           onError={onError}
           className={loaded ? 'img-fade-in' : undefined}
@@ -264,7 +269,7 @@ export function Projects({ projects }: ProjectsProps) {
       <div className="mx-auto w-full max-w-[1000px] md:w-[min(100%-10rem,1000px)]">
         <Reveal>
           <div className="mb-7 flex flex-wrap items-center justify-between gap-4 md:mb-10">
-            <SectionHeading number="05." title="Some Projects I've Built" className="mb-0" />
+            <SectionHeading number="03." title="Some Projects I've Built" className="mb-0" />
             {isAdmin && (
               <AdminSectionActions
                 section="projects"
@@ -311,7 +316,7 @@ export function Projects({ projects }: ProjectsProps) {
             const reversed = index % 2 === 1
             const imgSrc =
               project.image && project.image.startsWith('http')
-                ? project.image
+                ? optimizeCloudinaryUrl(project.image, 1200)
                 : null
             const imageLabel = project.image ?? project.status ?? ''
             const techItems =
@@ -328,7 +333,12 @@ export function Projects({ projects }: ProjectsProps) {
                 : null
 
             return (
-              <Reveal key={project.id ?? index} delay={0.05 * index}>
+              <Reveal
+                key={project.id ?? index}
+                delay={0.05 * index}
+                y={16}
+                duration={0.6}
+              >
                 {/* Mobile card */}
                 <article className="relative grid min-h-[360px] overflow-hidden bg-project rounded-lg md:hidden">
                   <div className="absolute inset-0">

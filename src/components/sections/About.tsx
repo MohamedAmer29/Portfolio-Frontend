@@ -12,6 +12,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { useAboutMe } from "../../hooks/useAboutMe";
 import { useAboutMeMutations, DEFAULT_ABOUT_BODY } from "../../hooks/useAboutMeMutations";
 import { useSmartImage } from "../../hooks/useSmartImage";
+import { optimizeCloudinaryUrl } from "../../lib/cloudinary";
 import { useGSAP } from "../../lib/gsap";
 
 declare const gsap: any;
@@ -33,9 +34,8 @@ export function About({ paragraphs, tech, letter, image }: AboutProps) {
       ? about.technologies.map((t) => ({ id: t.id, name: t.name, category: t.category }))
       : tech.map((name) => ({ id: name, name, category: null } as const));
   const rawImageUrl = about?.image || image;
-  const imageUrl = rawImageUrl && rawImageUrl.includes('cloudinary.com')
-    ? rawImageUrl.replace('/upload/', '/upload/w_600,c_limit,f_auto,q_auto/')
-    : rawImageUrl;
+  const imageUrl = optimizeCloudinaryUrl(rawImageUrl, 600);
+  const imageUrlSmall = optimizeCloudinaryUrl(rawImageUrl, 400);
   const [showModal, setShowModal] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -255,6 +255,8 @@ export function About({ paragraphs, tech, letter, image }: AboutProps) {
                   <motion.img
                     ref={imgRef}
                     src={imageUrl}
+                    srcSet={`${imageUrlSmall} 400w, ${imageUrl} 600w`}
+                    sizes="(min-width: 640px) 600px, 400px"
                     alt="Portrait"
                     onLoad={handleImageLoad}
                     onError={handleImageError}

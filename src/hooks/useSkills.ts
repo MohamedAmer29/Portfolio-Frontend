@@ -4,6 +4,7 @@ import {
   type Skill,
   type SkillCategory,
 } from "../components/skills/skillsData";
+import { fallbackSkills } from "../data/fallbackData";
 
 export interface ApiSkill {
   id: string;
@@ -68,10 +69,14 @@ function toSkill(s: ApiSkill): Skill {
 export const skillsQueryOptions = {
   queryKey: ["skills"] as const,
   queryFn: async () => {
-    const { data } = await api.get<SkillsResponse>("skills");
-    return data.skillsByCategory.flatMap((group) =>
-      group.skills.map(toSkill),
-    );
+    try {
+      const { data } = await api.get<SkillsResponse>("skills");
+      return data.skillsByCategory.flatMap((group) =>
+        group.skills.map(toSkill),
+      );
+    } catch {
+      return fallbackSkills;
+    }
   },
   retry: 1,
 };

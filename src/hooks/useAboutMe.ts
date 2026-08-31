@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../lib/api";
+import { fallbackAboutMe } from "../data/fallbackData";
 
 export interface AboutTechnology {
   createdAt: string;
@@ -23,8 +24,12 @@ export interface AboutMeData {
 export const aboutMeQueryOptions = {
   queryKey: ["about-me"] as const,
   queryFn: async () => {
-    const { data } = await api.get<AboutMeData>("about-me");
-    return data;
+    try {
+      const { data } = await api.get<AboutMeData>("about-me");
+      return data;
+    } catch {
+      return fallbackAboutMe;
+    }
   },
   retry: 1,
 };

@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../lib/api";
+import { fallbackHero } from "../data/fallbackData";
 
 export interface HeroData {
   fullName: string;
@@ -57,8 +58,12 @@ function normalizeHeroData(data: unknown): HeroData | null {
 export const heroQueryOptions = {
   queryKey: ["hero"] as const,
   queryFn: async () => {
-    const { data } = await api.get<unknown>("hero");
-    return normalizeHeroData(data);
+    try {
+      const { data } = await api.get<unknown>("hero");
+      return normalizeHeroData(data) ?? fallbackHero;
+    } catch {
+      return fallbackHero;
+    }
   },
   retry: 1,
 };

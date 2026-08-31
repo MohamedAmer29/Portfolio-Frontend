@@ -184,7 +184,7 @@ export function SkillsSection() {
       <div className="mx-auto w-full max-w-[1100px] md:w-[min(100%-10rem,1100px)]">
         <Reveal>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
-            <SectionHeading number="02." title="Skills" className="mb-0" />
+            <SectionHeading number="05." title="Skills" className="mb-0" />
             <div className="flex items-center gap-2">
               {isAdmin && hasServerData && (
                 <button

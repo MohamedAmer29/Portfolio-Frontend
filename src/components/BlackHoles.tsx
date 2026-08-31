@@ -18,7 +18,7 @@ export function BlackHoles() {
     return () => observer.disconnect();
   }, []);
 
-  const dots = [...Array(20)].map((_, i) => ({
+  const dots = [...Array(12)].map((_, i) => ({
     id: i,
     size: 2 + Math.random() * 4,
     top: Math.random() * 100,

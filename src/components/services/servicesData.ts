@@ -108,6 +108,11 @@ export const SERVICES: Service[] = [
       "Crafting responsive, accessible interfaces with modern component-based workflows and refined motion.",
     technologies: ["React", "TypeScript", "Tailwind CSS", "Redux"],
     icon: Monitor,
+    highlights: [
+      "Pixel-perfect UIs built from design tokens and component libraries.",
+      "Performance-first rendering with lazy loading and code splitting.",
+      "Responsive layouts that adapt cleanly from mobile to ultrawide.",
+    ],
     details: [
       "Reusable component systems that keep UI consistent and fast to ship.",
       "Accessibility and keyboard-first interactions as first-class.",
@@ -125,6 +130,16 @@ export const SERVICES: Service[] = [
       "Schema modeling and fast, reliable persistence layers.",
     technologies: ["PostgreSQL", "MongoDB", "MySQL", "TypeORM"],
     icon: Database,
+    highlights: [
+      "Normalized schemas with strategic indexing for fast queries.",
+      "Migrations and seed scripts that keep environments in sync.",
+      "Reliable connection pooling and query optimization.",
+    ],
+    details: [
+      "Data modeling reviews before writing a single query.",
+      "Migration strategies that never lose production data.",
+      "Monitoring slow queries and adding the right indexes.",
+    ],
   },
   {
     id: "backend",
@@ -171,6 +186,16 @@ export const SERVICES: Service[] = [
       "Identity, access control, and security best practices end to end.",
     technologies: ["JWT", "OAuth 2", "bcrypt", "RBAC"],
     icon: ShieldCheck,
+    highlights: [
+      "Secure token storage with rotation and revocation support.",
+      "Role-based access control enforced at the API layer.",
+      "Input validation and rate limiting to block common attacks.",
+    ],
+    details: [
+      "JWT flows with short-lived access and refresh tokens.",
+      "OAuth 2 integration with Google, GitHub, and custom providers.",
+      "Password hashing with bcrypt and optional 2FA support.",
+    ],
   },
   {
     id: "real-time",

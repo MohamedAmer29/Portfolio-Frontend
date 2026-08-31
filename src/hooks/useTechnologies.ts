@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../lib/api";
+import { fallbackTechnologies } from "../data/fallbackData";
 
 export interface Technology {
   id: string;
@@ -11,8 +12,12 @@ export interface Technology {
 export const technologiesQueryOptions = {
   queryKey: ["technologies"] as const,
   queryFn: async () => {
-    const { data } = await api.get<Technology[]>("technologies");
-    return data;
+    try {
+      const { data } = await api.get<Technology[]>("technologies");
+      return data;
+    } catch {
+      return fallbackTechnologies;
+    }
   },
   retry: 1,
 };

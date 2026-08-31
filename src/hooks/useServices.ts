@@ -6,6 +6,7 @@ import {
   type ServiceCategory,
   type ServiceEmphasis,
 } from "../components/services/servicesData";
+import { fallbackServices } from "../data/fallbackData";
 
 interface ApiServiceGroup {
   label: string;
@@ -58,7 +59,7 @@ export const servicesQueryOptions = {
         .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
         .map(toService);
     } catch {
-      return [];
+      return fallbackServices;
     }
   },
   retry: false,

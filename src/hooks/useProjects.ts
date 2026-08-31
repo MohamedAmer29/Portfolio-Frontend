@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../lib/api";
 import type { Project } from "../components/sections/Projects";
+import { fallbackProjects } from "../data/fallbackData";
 
 interface ApiTechnology {
   id: string;
@@ -32,37 +33,41 @@ interface ApiProject {
 export const projectsQueryOptions = {
   queryKey: ["projects"] as const,
   queryFn: async () => {
-    const { data } = await api.get<ApiProject[]>("projects");
-    return data
-      .map(
-      (item): Project => ({
-        id: item.id,
-        title: item.title,
-          slug: item.slug,
-          shortDescription: item.shortDescription,
-          description: item.description || item.shortDescription,
-          image: item.image,
-          githubUrl: item.githubUrl,
-          liveUrl: item.liveUrl,
-          featured: item.featured,
-          status: item.status,
-          displayOrder: item.displayOrder,
-          startDate: item.startDate,
-          endDate: item.endDate,
-          technologies: item.technologies.map((t) => ({
-            name: t.name,
-            category: t.category,
-            icon: t.icon,
-          })),
-          tech:
-            item.tech.length > 0
-              ? item.tech
-              : item.technologies.map((t) => t.name),
-          github: item.githubUrl ?? (item.github || "#"),
-          external: item.liveUrl ?? (item.external || "#"),
-        }),
-      )
-      .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+    try {
+      const { data } = await api.get<ApiProject[]>("projects");
+      return data
+        .map(
+        (item): Project => ({
+          id: item.id,
+          title: item.title,
+            slug: item.slug,
+            shortDescription: item.shortDescription,
+            description: item.description || item.shortDescription,
+            image: item.image,
+            githubUrl: item.githubUrl,
+            liveUrl: item.liveUrl,
+            featured: item.featured,
+            status: item.status,
+            displayOrder: item.displayOrder,
+            startDate: item.startDate,
+            endDate: item.endDate,
+            technologies: item.technologies.map((t) => ({
+              name: t.name,
+              category: t.category,
+              icon: t.icon,
+            })),
+            tech:
+              item.tech.length > 0
+                ? item.tech
+                : item.technologies.map((t) => t.name),
+            github: item.githubUrl ?? (item.github || "#"),
+            external: item.liveUrl ?? (item.external || "#"),
+          }),
+        )
+        .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+    } catch {
+      return fallbackProjects;
+    }
   },
   retry: 1,
 };

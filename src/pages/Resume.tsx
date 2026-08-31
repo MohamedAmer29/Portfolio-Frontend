@@ -209,7 +209,13 @@ export default function Resume() {
       />
 
       <main className="relative z-10 mx-auto max-w-[1000px] px-5 pt-24 pb-16 md:px-0 md:pt-28 md:pb-20">
-        <div className="mb-8 flex justify-center">
+        <div className="relative mb-8 flex items-center justify-center">
+            <a
+              href="/"
+              className="absolute left-0 inline-flex items-center justify-center rounded-sm border border-ink/15 px-5 py-2 font-mono text-[12px] uppercase tracking-[0.1em] text-ink/50 transition hover:bg-ink/5 hover:text-ink/70"
+            >
+              ← Return to Portfolio
+            </a>
             <a
               href={portfolio.resumeUrl}
               target="_blank"

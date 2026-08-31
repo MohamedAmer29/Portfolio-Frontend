@@ -111,6 +111,7 @@
   p, li, span {
     line-height: 1.75;
     letter-spacing: 0.01em;
+    word-spacing: 0.14em;
   }
 
   html::-webkit-scrollbar,
@@ -285,6 +286,8 @@
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.35);
   opacity: 0;
+  transform: translateZ(0);
+  will-change: transform;
   transition: opacity 0.8s ease-in-out;
   animation: blackDot-spin linear infinite;
 }

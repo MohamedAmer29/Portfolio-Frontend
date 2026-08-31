@@ -6,9 +6,10 @@ declare const gsap: typeof import("gsap").gsap;
 type PageLoaderProps = {
   letter: string;
   onComplete: () => void;
+  fast?: boolean;
 };
 
-export function PageLoader({ letter, onComplete }: PageLoaderProps) {
+export function PageLoader({ letter, onComplete, fast = false }: PageLoaderProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const hexRef = useRef<SVGPathElement>(null);
   const letterRef = useRef<SVGTextElement>(null);
@@ -50,6 +51,19 @@ export function PageLoader({ letter, onComplete }: PageLoaderProps) {
       gsap.to(root, {
         autoAlpha: 0,
         duration: 0.25,
+        ease: "power2.inOut",
+        onComplete: finish,
+      });
+      return;
+    }
+
+    if (fast) {
+      gsap.set(hex, { strokeDashoffset: 0 });
+      gsap.set(mark, { opacity: 1 });
+      gsap.set(car, { x: 0, opacity: 1 });
+      gsap.to(root, {
+        autoAlpha: 0,
+        duration: 0.35,
         ease: "power2.inOut",
         onComplete: finish,
       });

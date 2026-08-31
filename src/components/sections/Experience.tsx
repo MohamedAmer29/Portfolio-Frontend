@@ -294,7 +294,9 @@ export function Experience({ jobs }: ExperienceProps) {
                         }
                       />
                     ) : (
-                      item.company
+                      item.company.split(' ').length > 2
+                        ? item.company.split(' ').slice(0, 2).join(' ') + '…'
+                        : item.company
                     )}
                   </button>
                 ))}
